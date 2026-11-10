@@ -1,0 +1,497 @@
+<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Guia do Teste de Rodagem</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&display=swap">
+<style>
+/* layout: página branca de uma coluna, pensada primeiro para o celular. Duas abas no topo, montar o caso e ver exemplos. O resultado imita o cartão de rodagem do AgendaFord */
+:root{
+ --blue:#00095B;--accent:#1700F4;
+ --bg:#FFFFFF;--card:#FFFFFF;--ink:#0B1235;--mut:#565D7E;--line:#DFE3EE;--soft:#F5F7FC;--tint:#EDF0FB;
+ --ok:#1F9D45;--oktext:#16733A;--oksoft:#E5F4EA;--no:#C8102E;--nosoft:#FDEDEE;--warn:#8F4F00;--warnsoft:#FFF4E0;
+ --f:"Figtree","Ford Antenna",Arial,Helvetica,sans-serif;
+ color-scheme:light;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font-family:var(--f);font-size:17px;line-height:1.5;-webkit-text-size-adjust:100%}
+body::before{content:"";display:block;height:4px;background:var(--blue)}
+.in{max-width:1100px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+h1,h2,h3,h4{margin:0;text-wrap:balance;line-height:1.15}
+p{margin:0}
+button,input,select,textarea{font:inherit;color:inherit}
+.marca .in{padding-block:14px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.marca img{height:32px;width:auto}
+.marca span{font-size:12px;font-weight:700;color:var(--blue);letter-spacing:.08em;text-transform:uppercase}
+.hero .in{padding-block:8px 18px;display:flex;flex-direction:column;gap:8px}
+.hero h1{font-size:clamp(28px,6vw,44px);color:var(--blue);font-weight:800;letter-spacing:-.01em}
+.hero p{color:var(--mut);max-width:60ch}
+main .in{display:flex;flex-direction:column;gap:20px;padding-block:20px 64px}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.passo{border:1px solid var(--line);border-radius:16px;overflow:hidden;background:var(--card)}
+.ph{display:flex;align-items:center;gap:12px;padding:16px 18px;border-bottom:1px solid var(--line);background:var(--soft)}
+.num{flex-shrink:0;width:36px;height:36px;border-radius:18px;background:var(--blue);color:#FFFFFF;font-weight:800;display:flex;align-items:center;justify-content:center}
+.ph h2{font-size:20px;color:var(--blue);font-weight:800}
+.ph p{font-size:14px;color:var(--mut)}
+.pb{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:0}
+@media (max-width:820px){.pb{grid-template-columns:minmax(0,1fr)}}
+.form{padding:18px;display:flex;flex-direction:column;gap:16px;min-width:0}
+.saida{padding:18px;background:var(--soft);border-left:1px solid var(--line);display:flex;flex-direction:column;gap:12px;min-width:0}
+@media (max-width:820px){.saida{border-left:0;border-top:1px solid var(--line)}}
+.lbl{display:flex;flex-direction:column;gap:6px;font-weight:700;font-size:16px;min-width:0}
+.lbl small{font-weight:400;color:var(--mut);font-size:14px}
+input[type=text],input[type=search],textarea,select{width:100%;min-height:48px;font-size:17px;background:var(--card);border:1px solid #C9CEDD;border-radius:10px;padding:11px 12px}
+textarea{resize:vertical;min-height:84px}
+.g2{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr));gap:14px}
+.op{display:flex;flex-direction:column;gap:8px;font-weight:700;font-size:16px}
+.seg{display:flex;flex-wrap:wrap;gap:8px}
+.seg button{min-height:46px;min-width:76px;padding:8px 16px;border:1px solid #C9CEDD;background:var(--card);border-radius:10px;font-weight:700;cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--blue);border-color:var(--blue);color:#FFFFFF}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{min-height:44px;padding:8px 14px;border:1px solid #C9CEDD;background:var(--card);border-radius:999px;font-weight:700;font-size:15px;cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--blue);border-color:var(--blue);color:#FFFFFF}
+.gt{font-size:12px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--mut)}
+.tog{display:flex;gap:12px;align-items:flex-start;cursor:pointer;font-weight:700;min-height:44px}
+.tog input{width:24px;height:24px;margin:1px 0 0;flex-shrink:0;accent-color:var(--blue)}
+.tog small{display:block;font-weight:400;color:var(--mut);font-size:14px}
+.btn{min-height:48px;padding:10px 18px;border:0;background:var(--blue);color:#FFFFFF;border-radius:10px;font-weight:800;cursor:pointer}
+.btn.sec{background:var(--tint);color:var(--blue)}
+.lin{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.na{color:var(--mut);font-style:italic}
+.st{font-size:12px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--mut)}
+.qual{display:flex;flex-wrap:wrap;gap:6px}
+.q{font-size:13px;font-weight:700;border-radius:6px;padding:4px 9px;border:1px solid var(--line);color:var(--mut);background:var(--card)}
+.q.on{background:var(--oksoft);border-color:var(--oksoft);color:var(--oktext)}
+.al{border-radius:10px;padding:12px 14px;font-size:15px;background:var(--warnsoft);border:1px solid #F3D9A8}
+.al.red{background:var(--nosoft);border-color:#F4C7CC}
+.al b{display:block}
+mark{background:var(--warnsoft);color:var(--warn);border-radius:4px;padding:0 4px;font-weight:700}
+.afc{background:#FFFFFF;border:1px solid #E6E9F0;border-radius:8px;box-shadow:0 1px 3px rgba(0,20,46,.08);padding:14px 16px;display:flex;flex-direction:column;font-size:15px;min-width:0}
+.afc .tt{display:flex;justify-content:space-between;align-items:center;gap:8px;padding-bottom:10px}
+.afc .tt b{font-size:15px;font-weight:600}
+.cp{min-height:36px;padding:4px 12px;border:1px solid var(--line);background:var(--card);color:var(--blue);border-radius:8px;font-weight:700;font-size:14px;cursor:pointer}
+.cp.done{color:var(--oktext);border-color:var(--oktext)}
+.rr{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:9px 0;border-top:1px solid #EEF0F5}
+.tt+.rr{border-top:0}
+.rad{width:16px;height:16px;border-radius:50%;border:1.5px solid #AFB6C8;flex-shrink:0}
+.rad.on{border:5px solid var(--blue)}
+.dl{padding-top:12px;font-size:14px;color:#3B4366}
+.dbox{margin:6px 0 4px;border:1px solid #C9CEDD;border-radius:4px;padding:8px 10px;min-height:72px;font-size:15px;line-height:1.5;white-space:pre-wrap;background:#FFFFFF}
+.ck{display:flex;gap:8px;flex-shrink:0}
+.ck span{width:20px;height:20px;border-radius:3px;border:1px solid #C9CEDD;color:#C9CEDD;font-size:13px;font-weight:800;display:flex;align-items:center;justify-content:center;line-height:1}
+.ck .y.on{background:var(--ok);border-color:var(--ok);color:#FFFFFF}
+.ck .n.on{background:var(--no);border-color:var(--no);color:#FFFFFF}
+.rr.chk{padding:11px 0}
+.abas{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}
+.abas .in{display:flex;gap:6px;padding-block:8px}
+.abas button{flex:1;min-height:44px;border:1px solid var(--line);background:var(--soft);color:var(--blue);border-radius:12px;font-weight:800;font-size:14px;cursor:pointer;padding:0 4px;white-space:nowrap}
+.abas button:active{background:var(--blue);color:#FFFFFF}
+.passo{scroll-margin-top:72px}
+.fl{display:flex;flex-direction:column;gap:10px;min-width:0}
+.sug{display:flex;flex-wrap:wrap;gap:8px}
+.sug:empty{display:none}
+.mic{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:8px 16px;border:1.5px solid var(--blue);background:var(--tint);color:var(--blue);border-radius:999px;font-weight:800;font-size:15px;cursor:pointer}
+.mic[aria-pressed="true"]{background:var(--no);border-color:var(--no);color:#FFFFFF}
+.mic[aria-pressed="true"] svg{animation:pulso 1.1s ease-in-out infinite}
+@keyframes pulso{50%{transform:scale(1.3)}}
+.aviso{position:fixed;left:16px;right:16px;bottom:max(16px,env(safe-area-inset-bottom,0px));z-index:20;background:var(--blue);color:#FFFFFF;border-radius:12px;padding:14px 16px;font-weight:700;max-width:560px;margin:0 auto;box-shadow:0 6px 24px rgba(0,9,91,.3)}
+.dica{background:var(--tint);border-radius:12px;padding:12px 14px;font-size:15px;color:var(--blue);font-weight:600}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important;scroll-behavior:auto!important}}
+.form{gap:24px}
+.lh{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.lt{font-weight:800;font-size:18px;color:var(--ink)}
+.sm{font-size:14px;color:var(--mut);margin-top:-6px}
+.ind{flex-shrink:0;font-style:normal;font-size:12px;font-weight:800;border-radius:999px;padding:3px 10px;background:var(--warnsoft);color:var(--warn)}
+.ind::before{content:"Falta"}
+.fl.ok .ind{background:var(--oksoft);color:var(--oktext)}
+.fl.ok .ind::before{content:"\2713  Ok"}
+.fl[data-opt]:not(.ok) .ind{background:var(--soft);color:var(--mut)}
+.fl[data-opt]:not(.ok) .ind::before{content:"Opcional"}
+.stt{margin-left:auto;flex-shrink:0;font-size:13px;font-weight:800;border-radius:999px;padding:4px 12px;white-space:nowrap;background:var(--warnsoft);color:var(--warn)}
+.stt.ok{background:var(--oksoft);color:var(--oktext)}
+.stt.na{background:var(--soft);color:var(--mut)}
+.btn.big{width:100%;min-height:56px;font-size:17px}
+.btn:disabled{background:#E3E6F0;color:var(--mut);cursor:not-allowed}
+.sug .chip{min-height:40px;padding:6px 13px;font-size:14.5px;font-weight:500;background:var(--soft);border-color:#D5DAE8}
+.sug .chip[aria-pressed="true"]{background:var(--blue);border-color:var(--blue);color:#FFFFFF;font-weight:700}
+.sug .chip[aria-pressed="true"]::before{content:"\2713  "}
+.sug .troca{min-height:40px;padding:6px 14px;border:0;background:transparent;color:var(--accent);font-weight:800;font-size:14.5px;text-decoration:underline;cursor:pointer}
+.mic{min-height:40px;padding:6px 14px}
+textarea{min-height:72px}
+.hero h1{font-size:clamp(24px,6vw,36px)}
+.ov{width:100%;min-height:120px;margin:6px 0 4px;border:1.5px solid var(--accent);border-radius:6px;padding:8px 10px;font-size:15px;line-height:1.5}
+.lk{border:0;background:transparent;color:var(--accent);font-weight:700;font-size:14px;text-decoration:underline;cursor:pointer;padding:6px 0;text-align:left;min-height:36px}
+</style>
+
+<div class="marca"><div class="in"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAX0AAABgCAYAAADxRqKgAAA6PklEQVR4nO2deXyb1ZX3f+feR5LX2LLkJDiOLblhS9lDSUM22QECpNDSsnRj6N4y8E47pUNLKYXOlO4zna60nTJtKZSZUii0ZSk0tuJshSFlKaSUpPGahMTyFjtepOe55/1Dki3bkqzlypaLvp9PwLrPvefeR8t57j333HMIBeYDWVW1unSs1CiTisqEQWUSwsGKhmCFjrHddmyg3X8MgJrvgSZnpd1Z6zpFCLmYpRJgIQBAshKmDP8NADIUfm1YSpGAaQmYloJJJBQspYSASRabpoQpLJgkYIaEVGTClCoUDNptQWmOB4+NO4LoORoE9gbn754TscpW6Slfa0CeDDABgCVYCKaJ90EwC0b4tRIkBPPENWYSSrCQDNMiHhEmhoXkESg1EiIxIk1rhAWGlZAj5mhwZFiOD+PQnlEAPOe3mgLOmrV1MGx18z2OVGFSxwc6Wp9Hau8nVdQ1nmOAnZn2pxiv9Xf5X8q0/XRKlq+tKYE817LRMrL4hb7Q8edxaM9IvLqkq1MA0u3xXQWi6xh0ika5uWJIgP6np63j34H947qFV9Stc0oSp0oSJymiEwE6iYCTADQAKEtBhAIwzMAxAvpA2GsBL5BSz4+PjD53/OjTR3SPOXVW2t3eE34J8CUA7PMwgBCAQQADAA8wMEDAEQK9AqhXLMva29c5sg/YE5qLwZTUrz+hRNj8CH++cwkDGAUwAiAAwiuk1CtK0V9M5r2Do6G/IrBzaC4HVLZ0fbWj2P5zAl8IQMzaIL94VQXVpr6D/u5EFZz1m94jib8Awhs09Pe7QFvzZdkIcC1vfCtJuh3AYQh+FiYOkhRnKuaziKjfHBu9YeDwro7YNtqUfnV9060s8EVd8uYKDoVW93Zvf0aDKKqoX3+2XdguVYxLiLAagNQgNy4MdBPoBQY/EQwO3z908JneXPU1DXJ7m34G4No56i9TQgD+AuKHrRA/oHNWNR2Xd9OvCPyOXMnPAmbgIMCvEFRrMET3H+v2789lh25v0y8BXJXLPnKJReqy/gP+38W7VunxnWWQ+CMAh6buODA+WJZoRp4U99pyd5njBwAwHhr+p3i/f2edb50U4lskrO/2HNj2k2i5FqVfVbd+pZC25wHYdMibSyxLre/v9O/ItL2rzncBSXENCJeAsUzn2NJgnBmPWlA/H2gfejSXM1xnnW+dlGJ7ruTnDMZfIPDLYFDdq1PxVdStc9qk/SgAQ5fMHPMMMd83MjLyv7pXi4uWb3yT3ZA6JlDzxngwePLQwR2vxrvm9jZtA7BBY3dmYGi8KpPVmMuz6W4Cngm0b/1h0oo1q0pcjopfm8r86mBHazOgSem7PZs+D+Iv6JA1x7wWaGuuBWCl2Y7cyzdcBsO4FcB5ORhXNvQQ0497RnvuxJEXj+sW7m5o/AKYPq9b7hwSBOHLgQOvfUnH3kC113clQzygY2BzjMXAVovVXQPt/od1CHR7N/0rwLfpkDUfEPilnraW0+Ndy83DnXcE2lrWp9vKWd+4xSD6YE9789sr6hpX2SR+PCmSFIgOh1ToP6JK3lW7ZhnZin4XGApuQGDnkBabG5O6RIecuYZADyE9hS+dDY3vrvY2vgjDeAT5p/ABoJqJb3GXuF921jdu0S2cFV2gW+YcYwfj9mrvkj2u2sbV2QpjiIt0DGoekARcZJD4tdvb9EjVMl9t1hKZL9UwrnmDiR5MdE1CXgDNqzlS9EQm7aSg20dGjl8floEygIrGx/nC8XG+cMQav0wp/NomjEcqPb5KAOjt3n2Qlfixu9z4GKBho6W8xucm0JuylTMfhNhKeYbmrPOtc3ub9kqm+xh0Wi7HpYl6Keh37oam+0s9vqU6BDqdqyqI8vJBlzYMOo1stNPtbfoGstt72axrTPPI5cIuspoklNSvPwGEc3QOaq6xgqGHEl0jIbVPbIMIPZ52I/facgDBWNMcgc2hQ/7A0CF/YKRr56G+jq13h8VTfbROyAo9yTBWAxqUvlFEFyGHG5Y55MhAuz8V27So9m76rJSiBXPvnZE9jHcWQ+x1Lt+Y9jJyhqiK8kYsHNt1KkgAN7m9m27PpLGrfsOpABaMW+IsLJKCHnQ2+N6SSeMi2C+FXm/AuWZ/f/f2FxNcIyLtD/cjgx3bn0u3UWWxPJuhprRjUImzzrfOWedb56rzXeBqaPpPAD0DB7teidY51t26n8ArAA1KXzItSNMOGLOadko9vqVub9OTDL4TC1nZEZzSkI9ma86w0YI37SSAb3XVNW5KtxWR8fcwy4/FIVk8WOnx+dJtSLSwTTtESGjaqVzWeAaAGq39gX6PDM5Y2IWsJvDRacVuaYibhKTbSYrHwEQhK7hmmit6tC/KVukLLNDlbYjNXyW7XrW8cXMxiRcApK0M8pRyMujxymWNZ2YqgEEX6hxQHiFI0r1pm8GIF+R3fxbsBokfAivScEtcaSfCgv5uqCSmHSnpYt39MZkZ2fPH1fjzxPLs2DICdwYONF/R29ZyocnqagJfQ8KoiK1TVbV6EcBDADgrpe+qXX8ugOpsZMwTRwc7Wrcluuj2bvywMOgxAIvncEy5h+A07PRkxCyRFs6atXVYiOat1FlaTPSNlGt7fEUA6XTfyydOctXVfSLVyq66xRsAlOduOLmFwV293dv/L9F1kqxb6VvjY/RUJg0Hu3YdYEJDouthTyx6xCD6CWLMbWpR8TkM8ScgS/MOGXbtT8A5gVRC006lx/c2QN6FhXeaMFUWExn3Ic37I1vRgp7JpQKD3gKsSumsSZXi9QBKcjykeYMErku9rljQph0QPYREphb32nKA1ursjoFnhw75Axk3J7Xb6fW9N1EFk61PA3RSdcPG90WKyIC4WVlhx5WsFNtCddVkk+KadiqXb9hgkLgfC3NjOnUIZ7sbNl6TThMh1N+90iegoqK+NKUNbyHl36NpZxLCqRXLz08t1ABBu2vwXGKFzISmncoy2yZoPnRKhIxMO1HUwOinJeimkuVrayw+/lIohBtjrw+0+weUFbrQNGkfALjrGj/MAq9GD6FmvDm5gF01j/Z2tvinFzprN5wuw773RXM/pHmA5ReBlQ+meEBJANSU8zHlATYhtwBonq0egTdz9s4qIZjmlUEWe1UoeAwAlJ0MhwWD7TbByhTKgmGTZFiEIiGNN0vQhWA0AViUbeez4RCOswD8LVmdRbUbTsTCNvsdGehq3ZnooiHoYt0h7ZRSWSn9vr6nj1WWb/xkiWF/JKTERwc6WmaYqvs6t+8FQC5v043MeHfv2OCEE0bGSt8ooovAC3BGHMe0U3nC+fXSbjwORuX8DGpeaHB5l36kt23vd2erWOnxnYGFuXeTCbPa6V21a5Yx6I3Zd0VPBrpafzO9NEkglj8B+D7gM5x1eLM06EJWdEHk7IR27zJLqFnNV3bDWNCzfCb8D5J58bHeTVwCevva/Qn3D1JloGNbS3nN2vc6HI7/qvb4dpoKj/aP4nn0+IerlvlqhVDnsGHcSMTPBZibcGjPWLRtxl+UBeqquX98fORzU0o8viID4vF5jJszbxBwG7Dqh7PF6iGFsgX4eM8ISmGlJ+z2i1jDNN8i9VhmLf1mfyd2ANgB4Paq+o1rhJC/AeDOdkyxCBKzmjWYcOkCds7/a++Q+lyiixGHh/pE1zOBCU8h/bAvcRk6tPOvQ0Cjs37TO4W0rnGX0ZdR1lgGUDeI/hQKWbce69o24wGTqdLX7KrJzwPUBYYERWOOsyAmAYIBsGAmAWJBkWuIXCOwUEyCCCIyLoMBQYCI+X8vET8esqwfTI9G54a8GcRpe7P8nbDYVVtydm83kgbJ6u/076z2Nt3GwGVhjy9SDA7H+mdSRKwAUgArMCmOvKbIa9C0vAAMAZrpORb93AGAQMTgUgJVAoj+y7npjZlmfbwxCy3ffWWGslrmR+nr2LbbWdf4NilpOzQekDJN/DVpBffactIXgIyZsRuEQ2AIEpH9Rp74XU/53sR+VwCAIvoh8mriGseUx+iOISXod+PK+gV6/MMJByTpYtJs2uEMQy8kwerv2HofgPtSbZCR0tfrqklfD7Q136xHVnpU1K1rAPEtc9RdCIw/g3gfIAYB6xgpMQABYqgKQFQyUCnApzDoVMzRZjLb7euA5EofAPe0NX8RmN/Q2RV165wStgulFFsYfCk0z2wBADTr+y4JdIEGXfDqYOeOA9mLCdPf2bLT3dD0CBhv0ySS+0eCiU6oAgBcpcYF0BVmmNS3etv8/6xFliaIpW7vRB6D9XvNMtMmI6XPhrxE03RCjY2Mpu4brRmbtH8LuZ09vmoRfkJK+fuA59HuH5u9CYBqX1llKc6VQryNGB9ADn2gBXg9gP/IlXydDHbu6Afwy/C/lfZqz9L/YcIVmrtJ+tV21a5fxYAr204Y2md8UKDtAvw2TeJaZwv5S0Jqc9UcHwv9QJcsLdSsKtG4ignDeP54u/81rTIzICOlTyS02PMZ/MzwkV3TjxTPCe7lGy4HkFGckRT4nWmaXx/oat2OTNLZ9fiHB3rgB+B3OlfdbiyquJEFPo9cZKlirEVY0eVl2r3E7A32tBdf4/ZW3AedSTsYXckuk02TaUdldiIzGVJZfZz1IfswitVXZqlCAPQofcbfhg7tTG5KmmOctkWN0DwhpBw86DMh7W9I2FUTWlw1CZluZGVJ7ZpiSPmfOZB8RFl8TaCt+bKBrtZWaFCk/f17Bns6mu9UymwEcCj7Ic6gutzjOzkHcueAPaGQxV/VKZGIXkleQ4t//lh/aDjhifBMYUhNwd/4+b52f1IzREX9+rOhKR4NEz2qQ45OhNB+ChchS88eTrakrfQNm9ycSbt4hJSalw/bZXN8FkRezWJfGRsNnd7X2fJLzXIBAH0drbssU20GY1S3bJvi5bplzhWDI8FXoXGVosB/SXTN6VxVAUBDDH7allGKvNnkEs7XIUex+ApmeU9tQmhz1WSE8k7pE4RWpc/A4EDX8d06ZWZK2spb6noCMh3OJLRotpQvO89FEJ/SLPZISJmXDr+2vUez3Cn0d/lfYqZ/0S5Y8sL1ugvbnfWZCC2VcKYvFpVuggZ/eCZT+2Zeec3akwmsI6HLvr72rUmDEQIAQ+pS+sN9bYe0r3qyYVGtbwWAFXql0h9ymcY0HdJV+tpcNRl4HPNgRy6S5e+FXlvdCIdClw92tLZplJmQ3o6BH0GnkgMAFgs3zlA4qYQ2Lx62kFDpk5RasmSRxdqX+Q6H43PI3l0zoCy+ArP4kZctOX+xLhMvQFunhQCed2w2vbN8AGBYeWHaAdJU+lpdNXl+lnRK8gc1irPY5Hf3dm+fw2TQe0IA36tTIvPCnelXlRhvhj731qG+g/6DiS4yk44JT0dvR2tCE1ImVHl8twNIGIArRY6FTHVJX2fLy7NVdBQXXwJtAQnNPDTt6A+ljHE1766aUdL64NjQljIsyEPjf9AkK2VctY2rCYib+DgTFFn/0tvV8oguealiMqeS8StlDCxcpQ9BWuzYAMDgl5Fg9Rk2n8CTdSekb5ZfsnxtjdvbdI8gcUeWokZM07xssMv/bCqViVibPd8a12/qygqPrwhgn06RBH6p71BrUq+wuSQt+6QuV00wdvT1PX1Mi6w0IBt9SKO4A30Htn1bo7yUEYr26Ty6ZUIuWKVPROt0yRKKfpfoWpHDuEiHLdJUWSl9WVK/fnExaA2kcRkxrgRQluWQxi1lXRnxNkuBVTYGLtL2hbEVrXcu972gS5zF44eOde/uy7R9leL1kCjVNR4AYOg352VDykpfp6smmObeVbPaVwYgrXDCySDmb0FTDI10MdXYYbss1iZPMOeVTTVVXHWNm0hj9M+x0HjCDUyGsVnDFlRoYDi0NfqibMn5i+0l9ssl5GIFq5iAIgIVM8hBIDszGyAqBfgEBmoIWIrob1bPbtgLZpCvGzi4LWWlW+kpX0tAxew1U0MKvhcat5Qkisdd3qYf9bY1/1Mm7YXMgT3fyg///CgpK/2wq2Z2mbaiMEJzrvSrSuQ1AOs62TrQMxz8iSZZaaNCZOiM8B00Q3mz9EyV8mXnucign0Vis2QNA39OfEBohUPPkp93xpxyFUUlRdsBnMRg0ER4meh4OLItGy7RvBQzGeorvW1H/y3F0NoTGPkfO99BwLUAMlL6zHQx6X2zh3s7u3ZolZglKSt9KdQlmr56B3RvZKUCCfUhfT8d+q/ZjqjnErs09MQ7CaOGhOrUKG8ukHZb2Y90RkYljp9YBwAq6mvWAtkv+WNnfIuWb1yF+YlD/1cO8XW93f6nM2rNYovuJ5B2OHkOgERUnnB+PRFWah5NS755J6Wq9AVAWtzVeB5O4VbVrV9JoDdrEmeq8dB3NMnKCEuKJRp9LNvRvVv7ga9cUbms8UzDTj8CcJ5OuUoFEyp9m5SbdZhTLDHpweEQUsseQRq8Aou/GRB8D7pTjAE1jXCAQuR9RFpLYNZzBvEwbA7t2dAsjRv3ukhJ6btqG98ETa6aSvGcK30yxFu1nQhgPDDfO/HCRidpPOHwkjZJOaK8xue2G3QpSdoC4ApoTl/HjJcjmYYSVED2Ex6mwwPt/gnbOQudocmT9YtmYvPfezpasz4XY5dyy0II0GQFVUZKHwZdoj1Llqbw2TpJSemzwReTpjWdIHmb29uoJZQyE70QHA9+f+jgjleT1SMlL9S1JGXFd+uRlDmS6RxtwgjxTkWT0+t7jyTxDmZemrDtRCz9jDoOx99PXscGoBZAHbSbtWNguivRpVKPbylAZ2bdheDfI6J0I+EcdK08k7HfEnx3vxLN0LD1q2BsoXyPy8d47li3f3/6DVfZImkodfJXneGzdZGS0tfmqgmACGt0/X6J4bPbbasBrElca5UNlH28lAgjvZ1HtPrIZwID63RpQGVaM/KDurxNNxDwnfBeYpKeaOI/GZIXxuFXI6ec41Kk6CLI7AcamzxDLCprgubVSgJWSKb73ER97PX9YoxxZ8ahfZecUUrgjZrHpx2ixHszyaj0lK+F5rzDnGUC9Fwxq2lYq6tmDiAkD5y2aHnZWQBmzfWZCgzela63g3bC2Yp0zfStvhHzj7EFTueqCgK0Rq7MZ0xWn04WE4WkBtMOYJnmyFOTMvWEZ06DKoK4sZjEi5Ue39syEeC2V27CHGQuy5axYGK322TYRA5cNbNMgJ4rZlX6OqNq5gIGJXWHcpCh7cSmUOTXJStTXMV2bbNEZjwz3QvJcJa9HZoekguA1oF2/8NJrguALsy2E2Y8M+XAkOZk22lQbZD4tauh6SdVVavTm9Uatnx31Qy73c5i6k3YlqH3M2GM9pnjeRVILsqsyjzsqpm/KFLNya6zZG1KXzH/cfZaOcZGb9MlKl5SB2bjrbrk5zlDyuJ/TFahon79WQAWZ9tR7Ptc7vGdAs3JttOFGO+jirJfIvXJHEXSU+Y1ydxuk1GyfG0NgDM0D2ZbvnrFzfahC0BLkKmcYSpOqvTB+mLtsMXzmt2nfNl5LlL6ThWHODgt7MAqG8CNuuTnMcpk9Q+zBRczNJlh2AxOKP0ipSUJS9YQeLPbu/HWVOpWenxnUnhDPa9J5nabjFKbsRmaN5jIEnlp2gFmUfoRV039yad1QTg41O5PlulIgKArWcpwsgiMc4HDXvZ+EHTFX3hxsGP7n2ILKupL10PzZlY+QsDts5h1wvVY6LDnB3q7t08EMmPBeaH0w8jbK+s3zvqQt5G+XLi5ghl7k7rdJm2rPQE6xsyxhan0yU55bdoBI+ksv6pmwzJo2nxiRifmN4+sAONjuoQRrB9PL7ORkaucwfkD4/6etuY7Z61X7SsDNETwZDwFIOKa6jNA0BYgTgNSCnnLbJUU64uqmStIcGa++fAZYGS9bzMF5rZ8y/kbS3LzDiOvlT4zbU12XdlIW/YbAjI6xaiL6voNF4PwBk3ixsZDwftmlFLOEsXnB8RfC7Q3vxcpPLydxdwIDYnoOSaqZuniURcAXfGftEBAY/my81yJrpfX+Nykz+U5V4wFg/zzTBo662g1CE69w8mvAGvTSaj0y5aurwZw7hyOJW04GEo607cJSvhlTrsvYF7jZ7CwJd10TFPag9PDz5bXrD0ZwIn6+sgrxtji6wIHWj6NiVl3cjTZ83lsbGQi9MLxo70DRPhqZIX6YiRGzGsAtOfLTQOjyFGacPPecOBi6EtSkwtCFvFNmR3IAoTUnwAdlpnXSj/h4Sybw36RrqiaOWLfbOEQSBHrugMiVOmRlD4VdesaANa26jKZZ5h2HLait8yv9SpndChlvauvc1taSalZR6wpxnPHjz59ZLJg/3jPgf2fiV95pb3cs7hBAqeQEKcIRiMBmzAHClcxnZXomiSxRevXgvEYkfWEScISTAIABLNg0MQvVQkSIvLLZSahRPhvg0lEdRIzCSKYQRW6P5tUpTnIkhUMjInkziXzTEKlrzGqZm4gldS0AwAWLKbs81hH8SL8A5zjGPo+wybEf0HfWYl9A+3+mf7DQr0lrz/vNCGgl4GvBFh9Fx3b0jLNhR+y2a96OK1gW3uDQ+17XwEmcvR+paR+/QklwvYeAJ8CsCTb8SSCONGPxGdAYbO+rwU/H2hvuRzzlIdiOmVLzl8MaAxpAgCMHejxD2uVqZlEiiTvXTWVOYurJgCAdM5R7M7aDbrDrs6Ky4tvgvTFBGELd2PalL6ibp0T0JeBap4ZIVZfCbFaEWhr/gba048oKQw9bpXKzO5E5kjH9sOBtuZvBENqHQPtOsYUF6K4q4nK5ep8vfZu9QvkicIHAFuJ/SLoPnhK+ZMAPRFxbzjvXTUBM2RSy2yVLNKq9GEY4t065c2G27vxwwRxo0aRoTGhfja90GbIi5Fm6sw85BWLcMsoqzf0tPtvGWj3D2QqSEJmbdphYLC/a1jLYb5j3f79HFTrARyZtXIGMOJnTjNsUqvXjhXKrzDDMgcJ0PPtHuMRV+nnu6smM906dMgfmK2etPQqfRbiWiw5Q2v+zEQ4l29cD8jvahVK6u64AbeUXMheOwFLWZcG2ppP7T/Q/JWMA4pNoCvaIv0hWUyfdOk76O8G+A+65MWiKP5Jc1akT+kTDvZ3t+ZTGG9tOUKiMNCdZ/cYl/izO72ump1gvASKbtawICYBggGwiGzIGAALMAkQC4AEMwwK55Cb/Ed4kRU93Nu+9Z6Ueibota0xlrlLXf8egD5/+XhUnnB+vTTkA9DgMhhDTzA4HucEps8AaYs7ogDsBzAGhgmCyWBFkc8dTIIJNgLeAG3xfWhnf8e2x/XIAiqXl66BhgNqBPP3s9dKU6Yl/o8lv0e73DFrRuTYSo/PQ4Q36uqDFU2Els4HIpnLtOQImSB8JiNv7jERM5S+ZlfN3wbami/XJCtt1NCxZ2VlhYJOux3TR5wNjS/2H2j5vjaZMVR7fVcyxF3QbF5Tim6Z7qYJROy2ENl7JjGeG+HQlpGO7Ydnq1q+bN1JDrt9G8KJvrPteA3CO9BafmzSMLTM/tS4/mU+G5YnBw51B+J5wUmWW3RuiQmytD2YdWA3NAdYA0AEC2FnDwWstMGzWCA4JKrGDMMsEQYrh2ArKJSdjCJlE8whoQwyWBmC2RQ2ScYYoT+V31A2zFD6tmJ9UTUti+c1RG9//55Bd2XTnwFknQQjBpJM33M3+E4PKPxzJhuF8aj0+DwG0RcZpH0mx4zdfR1b4yZyNwybFldNRer7I+2pfVmHDu541eFt/AVAn8y6Y2DxotoNK451t+7TIAsE3pytFxMzXs5JdjUlNHrSREQSfS9eOZHWAGshc2DoqdmrzR3MUncCdAD4kNvb9MHI32HpjgrAEbtkjw0Q4Aj740ogWqMEUCXeph2jx49fPdXdVx8zlLtkTQlTGP39nZxZ8mWNEGhGkhAtsPiYm0RHtbfpc4tq12Q6U5ZV3g0Xub1Njxgk9iMHCh+AZbF5AxIdSmLWYc8P8cDQA2kNinjWjfhUsRk2LZFUw6vc7F34KAfJM5wNje/OQX7aI31jAz+YUVqzqgSAxsB7vLO/f8+gPnnZsah2TVUOTxkTsps1CAAbikuKcxb4cPpMX4K0JI0AiJ8E/KYWWVnAZO4AS42nWaewmIF/s9uKP+/2Nj0HUrsAfsZUdBjAAIABK4hhaUcZgEoAlZJVFYQ4m1icD8J5AMpyNDYAAIF/MNDRGi8lIhbV+lZoUSSM7en+qK3g+C5pK2ZoOBxAhPMBzPBKShdbiXEhOPtVLlt6k2dUenweyfFn5NmgiL6GQ3tmnAZ2FpU3gbUF9gMQ9oknaZ+YeJAYV8JwTJmIiGOjqk8WTymrskaFWlQslDkuouYRLraHD2hZIRE1k4zbRChVs4hhlFwIcD6fMoYlSLsdL8oUpe+qbTwXmmzJxPnhuqTGeIdw5LwbG4DzwOI8ADBi1Jgxve/oZzk356COBK3QbYkuOoTcwnpM4b9Nt8Gx7t19bk/TKzoeOsy8NlsZAGCw2Kzh/Tje29mtLaVmRV3jKkPQI2BU6pIZIf4sH4AENAdYI19RSdE0U0WcZ0pFaRzlUxp+Ctui9WPMIxM/LgdKAJR4G583g3jfwMGWF5AEEnxxnm+3cnB4ZNbDp5ky5Wmi0VWTR5Af+SEjttW0ldKChzFqWfyOwc4d/QmrSL5MR1dB03w0o4bEu3T0T4RTwwfMshPDYB2r3BZgf7ZxmoSzzrfO5fV9xyapFYxlGsYVi0XK/EC8WT4AgEXeh1KOD51l2MRsSYCIVH4fPAXw51zZ84Hp5h1drpqM57L3l9aHFTJvlTZjC/I47aNmLLb4Xf1dLQn3MyLp8tZr6OuVTDdRidROZvnB2WvOihBkOx9AZg8fAJXLGs+ABm8isigzX/pqX5nLYa0km7yKQdcQaHm2Y0kEM3020NH6WLxrztoNpwOoy1XfucYSKun5nUqP70wQnzBX48mM3JzHiDKh9HW6ajIhr9yz+rtb/1zt3XQvg/9hvscyJzBu7O1qeSRpnbKizdByDkD9bvY68RkbM3c5HHpMqwbxOmSh9KVNbNbhxcRSvc/d4DsFwBgpjFnAmBAkSLGdBYoAFDFEEZjKCWoJQEsRftiUReckObb83dvbvvVrCa/aDb0B1uYYK2gl9RIiIfLdtANLqblR+jpdNZXmjSwdhNi63SBxDYDcW/jnFfq3QPvWuLbaWKQ03qLDnm+GKGOlP3Ro56sOb1MAGvaRmLKLHRR21dQBnYVI1EqmyA+KASaaeKaElbqWPex0aQ2w+nCyCpJ5ywIOvNcx26pT6k6Arp9g/1h/ay47mFDyel01Mf8JxKcx0O5vZ6ivz/c4csyPA21bP59CPck6QjUz+ge6ORuXWAaQVsjjxNC5wIrMHuhLzigFQctmcB5zb6Ct86Jk50rCrse0Zi4HpZmks/yISVOLe28O2Y0jLx7PZQdRpa/RVRNP5YOrZjx62/yfB/ju+R5HDmCQ+s9Am7o+lcpV9RtWQ88R9Cey/azZgq5zFEXOuuUZmSedRS4f/n5XgEzAbYG25n+YbYPZbrdvRn4nTEmK4uT7KVRetAlhT7u8hYCcmnaAiNKv8vi0RdUkVnllz58GB9paPgrgl/M9EF0wMCgUXxU44P/nVBWwJJuWAGsWU8Y29CiKLS0ePAAghMhoti5E3ntzZEofQV3d09b8RaSyYcEi73PhJkGFglZSN0cSRr6bdmBxbu35QETpCyF0vRl8nC3tgaY0YwXaBt8LIGNbdN7A2GOaY6uOdrQ8mE4zRVpO4VqmOZT13k0/B58FENQwHlB4Mzf9dsDfo9K/d2xk7NSeNn+qCcNlDrJIzR2M52aPvJuD1IgaYWCwrx3P5rofEelNlz3/+VwHC9LDnlAgNHo1gb6PFHOm5hsE+n6gvXPtYNeuv6XTrtLj8xBwuoYh/HHo4DO9WUvp3j3KQNwTw+lCYXttWruQFfUbvABO0tF/nrCfLXVhoK352uEju46m2qiqfsNqBrTllJ5rSCQ3i1TVrV+JPHdFJULLXJjGhV5XTc5n085UuneP9rRtvUEpax2B8z4Gdgw72eILetq23pDJISBJQotph8nK2rQThZDVZvAEDLjKa9ampcBtZPy9zPL/jy2+LtDWeVpvpz9tEwEJvQlT5hplctJNXEH2vM4RAgCc6RmPNDH0umouIKUfoa9j225g5Sq354TPgPizyN8NvZ1sqTsy+UFPhfRE1QyyNvOYUNilBHRE3ITNsJ8J4K+pd47N+e63nYQgGL9SbH6vr6M1q70RgsaEKXMNY7RXJJ84sFAXU567ogZDY3Oj9CWLSzS9FwP56KqZGnuDgfa9/1pRt+5euzA+rEi8l4Da+R5VGN7BFn8he2UPoNpXRmBf9mNCZ3936581yAEADMPcVaLJqYIMOh8pb9TrypI1hzBGmbCdYP1hlOnnOk6+Vy3z1QI4Q8Po5gUmbEdbkhDnS84oJZCO0+c5g8FdQ4d2pj5ZyQJDn38yP5ivrpqpMti54wCAWwB8rsq7YZOAcS2At0NblqeUMAHeoUj81gxavznW7d+vS7CrmFZDx0qG+H+yH80kIx3bD5d4G58HwoeasoI55WxPlZ7yN0JDlqwcYzLjGZBqNpVqGSSxK6mCywDh4PXgPJ8GJ0HASrrqdNqd5yB/V/AAACJOyxkjGwyAewCqz0YIA92mFfoXXYPKA6y+ttYnATxZVbX6BqO85EJL4BwCzgHobABLdPYF4G8AnmeLHw1axx/VskEaB5N50Jb9b/vVwNixL+gYTyxKqX8UQu5AlqZGIk75ISmCqheOvAnHdAyM/SDsJ1YHWFGbSWqfGBrb09f39LFcdkwWD+pPyDVX8I6eNrorWQ0iMSNjXD7BjL2940NxUpnmBnLVNW4iiTsAOiWD9iMg9dD4uHnX0MEdr+oeXL5S6vEtLWF1jpJ0JrFwA7SIw/HyFwG8iECVYKoAcYgZw0QYBmM4krN3EEz7iay9polX+ru692mIypgaHl+Ri3ArQXwA6cfdGQH4Vybzdwba/e05GB2qPL6LhRAfBWMt0o8FwGA8NR4KfiGN76JwNjTdLBnXI5zXIDYnM6a9jqcWFeJ7f40AGJ7x2TOGQTQMqGGwGGSl2pms/cExc386nja6cTpXVUhn+R1g8S5kdzgr0fuUbd14HATTL8bGgncNv7a9J3nVFY5qT+0dDPFREMoTVEr0WSa7Fq88lTLFgCLwaxbRg+Oh8XtGunYeSn4PBQoUKFCgQIECBQoUKFCgQIECBQoUKFCgQIECBQoUKFCgQIECBQoUKFCgQIECBQoUKFCgQIECBQoUKFCgQIECBQoUKFCgQIECBQoUKJAjatcUz/cQ4rPCAU05L+aPFQ4s4KTrf08s2HCqBbJlla3aU/4eBXEZEU4D4EaCENLMeKy3vfkdAOD2bvoawP8vieARAAEARyzCYyI4+vPe7t0HoxfdnqZPgPBlAGDghd625jfHE1JVt/EqIeU9kXqB3rbm5QBQUbeuwSbtLyfsncEgjAIIMHi3aYX+NRIyewauOt8FkOKjBF4BUAPCYZaHmdFBpB63QuqelPMG1KwqcTsqkkdHDY9tEOBuAj3S0/ba14C9M/IDu2rXLCOj+CYQVgFYAeAEACYDRwjYpSzrV32d2x7EtMBebu/GDwPy24m7xzgBvQz0ALw1OB68Z3oMd7e3aRjJlHP4HobAOMikHu0NjX8J3btHp1crW3L+4qJSx01gejMDDQTUhFvTUQbvVoIf7D/Q8r8IR5mdoMqz6RpB/NPZ7gFAAMR+K8Q/7+/yx818V7Hcd67NoE8AdB6AagBFM2vRdwJtW2+O3Hs7pkbQHQuMBGpx5MXj8eS7PJtuJuIpEWcZ+JfetubvJhq/y9v4FIEmcjkrRTf2dWy9O1H9XGDMZWcF8oOK+g1emzAeZuCMVJ76RDEROZkNULwfzwRFAKoAnCQZ62EU3+yqXX9xb/f2Z8LtSYK4CAAInDjGuTAEEK0XEwudFSHujzc6WABAMYAqAp1kE/arK+oa1w92tuyJVildvHpJcUnp/SA0xjaKUEaENwLijdImPl7t3XRHT9vWr2Kackpy74mZGBstZeBct3fpmwJte98aW6XK47udID4NwvRVhy2S2OdqIeXVbm/TVg6NXhf7QAVLmeyzofD4KghoAGi1w+H4lL1+w7t6O1ofiqnmQDK9EL0HwmKCONttFK8NABcg5gHkrt90EwTfAUbZZJNoez6BgLdLpre7vY3Xm8zXxkZtZaEkmGa9BwANYDpPGvRJV13jB3s7W+6Jrees3/QeKfinSe8FCH+fJynC1M+waHGR6+KjQNxY9wR+57T6IE7cX1Xd+pUE2oSYt0QQ3wCgoPQL5BCPr8hG4teYmikpBKADwGGAZyg3YhF3thueNfK0ayRBaABjWaSSE4btvwGcpucGpsLgPxIQk1SEiBnVRFgZ6b/YJuh/Ad8p0SQ/RaWl3wWiCh8A02EIfpqZOon5NBDejPCqx8bgO6saNo72Hdj2zTQH9icQx8TBJ2KgisLvQ/RHf3nV8sbNfV0tvwcAZ4PvLYLFHTFSxgA8w8ALBCxh8BoCLY9c20RG8W8AnId4DyTGKIifnlpIEowaEN4QKbCTMO5Gte9J9PiH49zFiwDHxKInQjiE+OmImpsIjVV1G9/R17ntAQCorG3cCMFfj7nHIMDPEMSLDHYDWA0gkr+D1hlETwArz4i34om0nZYGkgjhlU80F7JBku4qr/E9NnTIHwDCkxop+C5M6jcG4wAT9xBoHOCJBJnM4m9x+p1ACVyBOEp/Ue2GE0E4O1nb6ZCU12O6dYVwdlX9xjXhtK1zQ0Hpv85wKboaEmdGXzPjoVEO3TjSsf1wurIY2B1oa7lsxoXaNcVuW9FjAPkAgAhvLF+27qRc5FywmN8VL75/tcf3ZSbxGQAA4Q3Oetrc34FHF9c3vkMBV0brEePXPaM918Yu4Z3LfadJm3gi+uASLO8oXbz6F8ePPn0k1XEpqBv62vwz0odGzFYT6RyFwRcA+L3TuapCsIhNBnIoZPHlsSsUYIXD7a27B8DVkfs6x9mw8SP9B7bNTCJC6A60tTTOKAeEy9v43wS6LvK60lkOX38PZmSfUibfHH0gTbmH5Y2bhUFPTAiUxgUAHkDNqhLDRj/GpGLrsSy+or+zJSZ/rc9wecSPiPD+SMHJrrql/9zbuferccban+AeyOX1fZsgboy8LjFscjOA+wAImzB+CoTj5jPQrkLm5Rmk9+TwfdAWYKV9+kPJYbNdxZPJlRnTlfl0qn1lgLg2pmQMkVWCEPJ6AHOm9Bf45lCBdCFJH4x52cPHjr8/E4WflO7dowyaMjsiISu09jELQSv44ykFkk4HACXo+pjSvp72zndNt9n2d/lfsqA+FlO0qKi47EpooG/EfCJeuagsuzw2LzNBfXyqwgeA/eOBNvUeABN5cSXL9yM9FMP6xZQSK73Ppq+r5Q8AZqRGdclFFyK8BwEAIOLPTFX4AOA3e9ubPwjGxAybJNK9B2bGfVNKpKoAgCqP7zwAGyYrquszzOf8f5H/V1Z5Fs/Io8zgqye6wPQV1UzcpfI9FDZLAcBxi6xPxly+qrzG585gjBlRUPqvK1bZAExsIoHUg7lLxaempJRki9py0098mO1TZl7GpK31xMk69HCirGX9B/AEGP0TBUJLQnm4yorePmWcJu0AAIJx4mQhRnvaun8bX4LfZKhfxRSc43SuSktpE2jJ1NehtD4bV/3GyxFjJWCY4Xsw6MSYaqrnWPCBBCKYif835vXJJcvX1qQzBrKm3YPiAwAgiE+PLe8LDrWmI3cSa+I9FiSviL1SXrP2ZCC6WuadBOqcfcAcO9m4v//Awf9G2OEBAIrsdvmBzMaZPgXzzuuIqprSpYh50FsQHdG/3Q2NP2CesPVOg//Y2+a/Lc6FikqP76zYAmladmE3TmOmj082x5+i9ta5wmbDdbGvlbJejrhkxsym0TGj4QR+E9TYAZAzXJc96fQvIL7k8jbFePMQEbgS4I0x1bb3drWElTvxiTHWgteSpdAUltzPcqKyRFn5cvRjcFo1x/TPhhVJKcQKQN0ZU3ykb2zghbj9GPicy9v0oWnFiwjwTQrFnt72nogCpxMRuQkC+hHYOZTwHkjtZ550EioS0jMCTEkZSIAR7x4cBI8S9JWY4gHTHH8mPBzjNJp8I01XUcX30DBjoh7Th/Vk4MC2+6eXB0347QYCANwAvxXAPyKyd1LkcFwV7cEi3C8ZG6e3j8VZ17gWmDSphkz1w/DnW/czADcBABF/FMA3kDhlozYKSv91BAk+Ifa1AWvSRs1YTaCzErQci1+O9QaJ56aU2ETMNhkAYMxS/E9pDzZFDBL3uryNEy6DxCRBqEXMjB7Akd6x/ierHK4GxD70hEr6IGJQD02+cKU1MELjVCPv1DcFjOaQCl6J6I889oFLlHRcpqF6JE9KZ6Z4Y6ub8dnI6Dgm2iqL+JOJXBIBWpfMUM2M3eNjobdO2rt54h54chYb/x5MBGSMY2i8e2DAFe8e1PRqTJ851r27DwAI6qSY+zOI8b5k4wDLfgAzlL4QbAJ4GMCHACxxLt94fn/Xtu0AoICrIz2YoePjv5IlRUmVvhT0jzEdPjvY5X8WAMaDwR857PZPIjzghur6DRf3dLQ+lnS8GiiYd15HmJKmJJBWlhHjl09BhDeXov9ScVFMDmOPFQqtnmnX1cpaAl0Q/Rdxw4xV+CZM8yM48uJxU1lTNuMMFpXJBMfYYAGikM5Bg7BWSGNL9CUzYuUnHRegpphzhFTxPF+SwkC7qawL+g+0/GL22vEhwpuKiuwx5ipO/R7IWDTlJYu07wFMhy1lbQm0b/1hjCRtK0pl8oSJR8qwicdVv+FUCnsvgUFbZ0toX7bk/MUgvGNCphI/iP49dHDHq2C0RF+zMK6f3j4XFGb6ryMGO1o73J6m0agPOElrYtMt0Na8Orauu8H3TbD4RFKBjL8R1AMAwASDWbiIsBFAAwCAsErabbcAK6+bmA3SpEsogxIeAmKybBNzEkIyhWBhxjQaFoBBMPZYSn2pv6t1BwAYI+NHUBH7lVdJ7cgM1MTMdF9LXHMmIWVuGhwRz8SWVRpBl+Eo+jQI1wNwSIh7FtVuePpYd+u+afKTjkswTblusTXTq4jRT1A/BAAmKQGuRNhd8gwAIMBjCHnHoto1L0RnyTNEmPy23jHeGltWZVNO4RD/BIhPATBA/IOKusZnBztb9jDRazT5SVSH95D2xH1YSmHWxJ4BU5LjeUYdJ1bfAQAWJMCiEsyrIofWAOITJMk7Sj2+5463+1+LlB3A5CpIhcyxk0xpT7CSAY4PhxJe6+s61uz2VvQBqGLCFQA+ySSujln9zVghTMdRavsgePKciRB8p8vbdEdMldgH+CWVHp8nnjeaTgpK//WFAmEfoj76LBIbO1OB8JeeNv8t00td3sYvEuiz4T7wzur6pS/1dOy9EwAUqWEx4eI95fTjFAymquhvl5j7E9UzWa1I9UfS1/f0MXdF06uI+Hgz6AKEnywz7KhVdY1vJETOGiB8ejiVPqJIEiPTfd8HgOFKj++zBkR0Rkd2w9YEYB+E9SxYRmfNpVX1G87v62id5qMeaQRx0cQLRv9g52hXnEqBOJ8NXJ5N1xHxTxA2KWxw2Eq+CUzd/5gUjbHp99AHDAMrb3V7l34CEf1hk6oJwB5Y9CwEvy9SVVR5yjf1tSOutxJDXBTzQB0ZGO3bF6facE/7zHtYXN/4DiXolwh/ducVC3HXceAKAGBW+2nyYSIMcngG21u2TpeRGntCTE2/Icb7CPBU1K8/hyCuilwc42PDv55FgATLj0wrW5LEZCZtwEcBzLhnnRTMO68zGBxrIz2jyrPpGt1d9La13AZgwqOBiSfcRBVjf0zdxVUe38VxhRAumfyb4h6zz2hwQKxHycnuho3x7l8ISZ9HjHHYUtZsP/DU+rcmXRoBgAWfCgChIE3xdBFk3Ar4ZkzKnA2+tyB8IAsAQES/TTSbjkdv+9afAWie6B/8Tiw5ozT1OwDKl1V5EOu9w/JUABhF8CHEPEAFiVsiMXemULl8w4bIydTITeDJxPsKMzna0fIgMR6ZKGBcXrZ0fTUA8ODYI5EwDWHREt9I9/5iUdakicdOts+FT2sDDHp0Ns83Z93GSwnwTBQQDhL4pen/AEw8WJnEB+K9ZzopzPRfb4TGbiVb8VsY4Y1JQXyv29v0dga2A9agQmSBznRKFr0oAK0A3gsAIPKiZlUJDu0ZGQD+6GY6DApvKguIh9wNTV9TSj2hxoOH2W68wSaMjwGYeBgQq7jH4DNhfDT0raJi24cQXWWw/Lnb27RKwXySTXHIMHCKgvgwgInZNANPDnRs86fTjxDiYqfXN0XBg2iRZLppSj0z7Mp6rNu/3+XZ9N9EHHbdI1zq9lIL2Pc9y1QvK4lqm7D5wPyZmObHx8bHvpTOuMKi4WcgqnTtlYZrxUCclYywocnp9VXHlkkWZSB8PLaMyGoDgJGO7YdLGnzfjjELbnB76nZaYvl/8Dheho2dNhLrGLgVkw/UcXOc70j3HgD2AxR1pRQ2mzgFQE94Nbfxq4D8WmR0Z7lL3O3sbbqfgE62+KiSPPFgUhb9ZeZ5iEn6O4485fYuHQBQGTHxhN8HpWY17cjwoauJrkKhsY2DXbtmnACurm+6lQW+GHm52Flff2V/x/77ptfTRUHpv87o7d59sNLj+5ARDsUAhL8DVxNwNSA1hkG0Xo212S4SpcuOAfvQ7h/D8g0fg2E8BECCUAzG7YLE7aJoZsgVYvy6p93/0IwLGTL82vYeWb/h3TYyfgWCE+FB3iRg3ARj5tFKBneNKvN9mLlvkBzG7XL6QnqmhOHRYHBiI7V3eOwT7nLHyQDWhktoHYjWSZuIvJNTBFjE6sbpAdNSwWLaJ2KM72SgFvHMV0w3y+kHTWfaJsbNsdBE3JtAcPyzLlvRaRQ2nYX3dZjuC0dvoulvgWLgUwMHW9IynQGAyWqfjNkSkrZJV9zA+PD33I6KLcCEK6WbgP8HACQJsfckBb4JIKHSD+9FLf0tgNjTtMeOWmNJvWwqlp//BhA2TxQwnoin8AFgZPT4j4tLSz8PhN8lKfh6ADlT+gXzzuuQgXb/w8Tq/QyeaQvWhIWph7EMG7zRvwNdrb+xQubZYCT74XRaUNf2tDdPujVqYrCjtdkcHzubCT9lzPBvjzJG4O/x4Mhp2k8shzmkLOvtw69tn/SoCuwcCrQpH2DdDOCVRA0Z/MeQxat72v0/zaRjMoNTPhshyJuo7iz0sMnXDBzeNXneoXv3aG9by2Zi/njEdBEfxnOWxRuSRaRMhklTv1/ExuQ9HNozEmgbvJChvogYM2PGmGbsYTgQ6OF4kUVjsRnFH0WMfiU2v5eo7vGjTx8BI7aPtZXLGs9MVD9bCjP91ykRhXFPVV3jqQzVIAWVWhT/+8CM7ujfIcX3Ccl/ml4+ndCo9XsUT86OzHFrykGoyNH4Lc6atXVstzXYAA+Iy9nkDgviQH/X0VfjBeEaHKWjznI1IXfgeHJ/8EREFNX74fFd71Q4VwrUEnE1mIaUoq5eNbZrth/2FA6VBy2vujZZFUlsIcTHQyQPDnYeezG+Ld5vBtrwdQBfr6pbv1IwrYA0agCA2TrCIX6271Br3Id10DS3Sls4vos0VUJ7c68hX3RicqzKnHzAWMTXgTnxZJBIseIRaVqHersPv5DgEJnqaW/5NoBvl9esPdkosp0oTaqxDBgG89EQ49lEm++seJdFfC0A2BQlfP+H2v37DK9v4h5I8bRZ9J5QbxtuA/D5co/vZBupOgmxyFTSAWFNuvco+kv0b6H4hpDgYgBQVmji+xqQ4snY98sKYUpMJcu0vguDfgsAJvAsAFhKbYPgF6PvWX9Ha9wN7SghNj8nSDw+MRZp6XURjuH/A8w856aDvRBIAAAAAElFTkSuQmCC" alt="Forbel Grupo Borborema"><span>Guia da oficina</span></div></div>
+<div class="hero"><div class="in">
+ <h1>Teste de rodagem no AgendaFord</h1>
+ <p>Toque nas opções, fale o que percebeu e copie o texto pronto para o AgendaFord. Quase nada para digitar.</p>
+</div></div>
+<div class="abas"><div class="in" role="navigation" aria-label="Ir para"><button type="button" data-go="p0">O caso</button><button type="button" data-go="p1">Rodagem 1</button><button type="button" data-go="p2">Rodagem 2</button><button type="button" data-go="p3">Rodagem 3</button></div></div>
+
+<main><div class="in">
+<section id="v-montar" style="display:flex;flex-direction:column;gap:20px">
+
+ <div class="passo" id="p0">
+  <div class="ph"><span class="num" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.8-3.8a6 6 0 0 1-7.9 7.9l-6.9 6.9a2.1 2.1 0 0 1-3-3l6.9-6.9a6 6 0 0 1 7.9-7.9z"/></svg></span><div><h2>O caso</h2><p>Tipo de problema e como foi o teste na recepção</p></div></div>
+  <div class="form">
+   <div class="op"><span>Tipo de problema</span><div class="chips" id="tiposR"></div></div>
+   <div class="op"><span>Como foi o teste na recepção</span><div class="seg" id="modo"><button type="button" data-v="rua" aria-pressed="false">Rodou na rua</button><button type="button" data-v="estatico" aria-pressed="false">Estático, carro parado</button><button type="button" data-v="seg" aria-pressed="false" id="mSeg">Rua dispensada por risco</button><button type="button" data-v="guincho" aria-pressed="false">Guincho ou não liga</button></div></div>
+   <div class="fl" id="motWrap" hidden data-fld="motivo"><div class="lh"><label class="lt" for="motivo">Motivo da dispensa</label><i class="ind" aria-hidden="true"></i></div><div class="sug" data-f="motivo"></div><input type="text" id="motivo"></div>
+   <div class="lin"><button class="btn sec" type="button" id="limpar">Limpar tudo</button></div>
+  </div>
+ </div>
+
+ <div class="passo" id="p1">
+  <div class="ph"><span class="num">1</span><div><h2>Rodagem 1, na recepção</h2><p>Confirmar o sintoma antes de receber o carro</p></div><span class="stt" id="st1"></span></div>
+  <div class="pb">
+   <div class="form">
+    <div class="fl" data-fld="relato"><div class="lh"><label class="lt" for="relato">O que o cliente relata</label><i class="ind" aria-hidden="true"></i></div><p class="sm">Escolha uma opção ou fale com as palavras dele</p><div class="sug" data-f="relato"></div><textarea id="relato"></textarea></div>
+    <div class="fl" data-fld="onde"><div class="lh"><label class="lt" for="onde">Onde no carro</label><i class="ind" aria-hidden="true"></i></div><div class="sug" data-f="onde"></div><input type="text" id="onde"></div>
+    <div class="fl" data-fld="quando"><div class="lh"><label class="lt" for="quando">Quando aparece</label><i class="ind" aria-hidden="true"></i></div><p class="sm">Pode marcar mais de uma</p><div class="sug" data-f="quando"></div><input type="text" id="quando"></div>
+    <div class="fl" id="percWrap">
+     <div class="fl" data-fld="local"><div class="lh"><label class="lt" for="local">Onde você testou</label><i class="ind" aria-hidden="true"></i></div><div class="sug" data-f="local"></div><input type="text" id="local"></div>
+     <label class="lbl">Percurso<select id="percurso"><option>Curto</option><option>Longo</option><option>Acidentado</option></select></label>
+    </div>
+    <div class="fl" data-fld="percebeu"><div class="lh"><label class="lt" for="percebeu"><span id="percebeuT">O que você percebeu no teste</span></label><i class="ind" aria-hidden="true"></i></div><p class="sm">Fale o que ouviu, sentiu ou mediu. Se puder, diga o valor, como km/h ou temperatura</p><div class="sug" data-f="percebeu"></div><textarea id="percebeu"></textarea></div>
+    <div class="g2">
+     <div class="op" id="repWrap"><span>O sintoma apareceu?</span><div class="seg" id="reproduz"><button type="button" data-v="Sim" aria-pressed="true">Sim</button><button type="button" data-v="Não" aria-pressed="false">Não</button></div></div>
+     <div class="op" id="ac1Wrap"><span>Cliente participou do teste?</span><div class="seg" id="aceitou1"><button type="button" data-v="Sim" aria-pressed="true">Sim</button><button type="button" data-v="Não" aria-pressed="false">Não</button></div></div>
+    </div>
+    <button type="button" class="btn big" data-cpn="1"></button>
+   </div>
+   <div class="saida" id="out1"></div>
+  </div>
+ </div>
+
+ <div class="passo" id="p2">
+  <div class="ph"><span class="num">2</span><div><h2>Rodagem 2, após o reparo</h2><p>Só a oficina, para provar que o reparo resolveu</p></div><span class="stt" id="st2"></span></div>
+  <div class="pb">
+   <div class="form">
+    <div class="op"><span>Como ficou o reparo</span><div class="seg" id="orc"><button type="button" data-v="total" aria-pressed="false">Reparo feito</button><button type="button" data-v="parcial" aria-pressed="false">Feito em parte</button><button type="button" data-v="aguard" aria-pressed="false">Aguardando aprovação</button><button type="button" data-v="peca" aria-pressed="false">Aguardando peça</button><button type="button" data-v="nao" aria-pressed="false">Orçamento não aprovado</button></div></div>
+    <div class="fl" id="pecaWrap" hidden data-fld="peca"><div class="lh"><label class="lt" for="peca">Qual peça está em falta</label><i class="ind" aria-hidden="true"></i></div><div class="sug" data-f="peca"></div><input type="text" id="peca"></div>
+    <div class="fl" data-fld="feito"><div class="lh"><label class="lt" for="feito"><span id="feitoT">O que foi feito</span></label><i class="ind" aria-hidden="true"></i></div><p class="sm"><span id="feitoS">Peça trocada ou ajuste, diga também o lado ou a posição</span></p><div class="sug" data-f="feito"></div><textarea id="feito"></textarea></div>
+    <div id="r2campos" style="display:flex;flex-direction:column;gap:16px">
+     <div class="fl" id="naoWrap" data-fld="naofeito" hidden><div class="lh"><label class="lt" for="naofeito">O que o cliente não aprovou</label><i class="ind" aria-hidden="true"></i></div><div class="sug" data-f="naofeito"></div><input type="text" id="naofeito"></div>
+     <div class="fl" data-fld="teste2"><div class="lh"><label class="lt" for="teste2">Como testou depois</label><i class="ind" aria-hidden="true"></i></div><div class="sug" data-f="teste2"></div><input type="text" id="teste2"></div>
+     <label class="lbl">Percurso<select id="percurso2"><option>Curto</option><option>Longo</option><option>Acidentado</option><option value="Estático">Teste estático</option></select></label>
+     <div class="op"><span>O sintoma sumiu?</span><div class="seg" id="sumiu"><button type="button" data-v="Sim" aria-pressed="true">Sim</button><button type="button" data-v="Não" aria-pressed="false">Não</button></div></div>
+     <div class="fl" data-fld="obs2"><div class="lh"><label class="lt" for="obs2">Como ficou</label><i class="ind" aria-hidden="true"></i></div><div class="sug" data-f="obs2"></div><input type="text" id="obs2"></div>
+    </div>
+    <button type="button" class="btn big" data-cpn="2"></button>
+   </div>
+   <div class="saida" id="out2"></div>
+  </div>
+ </div>
+
+ <div class="passo" id="p3">
+  <div class="ph"><span class="num">3</span><div><h2>Rodagem 3, na entrega</h2><p>O cliente confirma que o problema acabou</p></div><span class="stt" id="st3"></span></div>
+  <div class="pb">
+   <div class="form" id="r3form">
+    <div class="op"><span>Cliente aceitou fazer o teste?</span><div class="seg" id="aceitou3"><button type="button" data-v="Sim" aria-pressed="true">Sim</button><button type="button" data-v="Não" aria-pressed="false">Não</button></div></div>
+    <div id="r3sim" style="display:flex;flex-direction:column;gap:16px">
+     <div class="fl" data-fld="local3"><div class="lh"><label class="lt" for="local3">Onde testaram juntos</label><i class="ind" aria-hidden="true"></i></div><div class="sug" data-f="local3"></div><input type="text" id="local3"></div>
+     <label class="lbl">Percurso<select id="percurso3"><option>Curto</option><option>Longo</option><option>Acidentado</option><option value="Estático">Teste estático</option></select></label>
+     <div class="fl" data-fld="confirmou3"><div class="lh"><label class="lt" for="confirmou3">O que o cliente confirmou</label><i class="ind" aria-hidden="true"></i></div><div class="sug" data-f="confirmou3"></div><input type="text" id="confirmou3"></div>
+     <div class="op"><span>Cliente aprovou?</span><div class="seg" id="aprov3"><button type="button" data-v="Sim" aria-pressed="true">Sim</button><button type="button" data-v="Não" aria-pressed="false">Não</button></div></div>
+    </div>
+    <button type="button" class="btn big" data-cpn="3"></button>
+   </div>
+   <div class="form" id="r3sem" hidden>
+    <p class="na">Sem reparo feito, a Rodagem 3 só é preenchida se o cliente retirar o carro.</p>
+    <label class="tog"><input type="checkbox" id="retirou"><span>O cliente retirou o carro sem o reparo</span></label>
+    <button type="button" class="btn big" data-cpn="3"></button>
+   </div>
+   <div class="saida" id="out3"></div>
+  </div>
+ </div>
+</section>
+</div></main>
+<div class="aviso" id="aviso" role="status" hidden></div>
+
+<script>
+var TIPOS=[["Suspensão","R"],["Ruídos","R"],["Freio","R"],["Motor","R"],["Transmissão","R"],["Direção","R"],["Geral","R"],["Elétrico","E"],["Ar-condicionado","E"]];
+var RISCO=["Freio","Motor","Transmissão"];
+var CAMPOS=["motivo","peca","relato","onde","quando","local","percurso","percebeu","feito","naofeito","teste2","percurso2","obs2","local3","percurso3","confirmou3"];
+var SEGS=["reproduz","aceitou1","sumiu","aceitou3","aprov3"];
+var S={tipo:"Suspensão",modo:"rua",orc:"total",retirou:false,over:{}};
+var MULTI=["quando","percebeu","feito","obs2"];
+var VOZ=["peca","relato","onde","quando","local","percebeu","motivo","feito","naofeito","teste2","obs2","local3","confirmou3"];
+var T9=["Suspensão","Ruídos","Freio","Motor","Transmissão","Direção","Geral","Elétrico","Ar-condicionado"];
+function por(m){return function(t){return m[t]||[]}}
+var OPC={
+ relato:por({"Suspensão":["barulho na suspensão","batida na suspensão","carro balançando","carro sem estabilidade","barulho ao passar em lombada"],
+  "Ruídos":["barulho no painel","barulho na traseira","rangido","ronco que aumenta com a velocidade","barulho de algo solto"],
+  "Freio":["freio chiando","freio trepidando","pedal de freio baixo","luz do ABS acesa","barulho ao frear"],
+  "Motor":["perdeu força","luz de injeção acesa","carro apagando","dificuldade para pegar","fumaça saindo do escapamento"],
+  "Transmissão":["trancos no câmbio","câmbio demorando para engatar","trepidação ao sair","embreagem patinando","barulho no câmbio"],
+  "Direção":["direção dura","direção puxando","barulho ao virar o volante","volante vibrando","folga na direção"],
+  "Geral":["vazamento","cheiro estranho","consumo alto","barulho estranho","luz acesa no painel"],
+  "Elétrico":["luz acesa no painel","vidro elétrico não funciona","bateria descarregando","painel apagando","central multimídia travando"],
+  "Ar-condicionado":["ar não gela","ar fraco","ar com cheiro","ar desligando sozinho","barulho no ar-condicionado"]}),
+ onde:por({"Suspensão":["na dianteira esquerda","na dianteira direita","na traseira esquerda","na traseira direita","na dianteira","na traseira","na carroceria"],
+  "Ruídos":["no painel","na porta","na tampa traseira","na roda dianteira","na roda traseira","no teto","no cofre do motor"],
+  "Freio":["na dianteira","na traseira","no pedal de freio","no pedal e no volante","no painel de instrumentos"],
+  "Motor":["no motor","no painel de instrumentos","no escapamento","embaixo do motor"],
+  "Transmissão":["no câmbio","na embreagem","na saída do carro","no painel de instrumentos"],
+  "Direção":["no volante","na dianteira esquerda","na dianteira direita","na coluna de direção"],
+  "Geral":["embaixo do motor","no cofre do motor","embaixo do carro","na carroceria","na cabine"],
+  "Elétrico":["no painel de instrumentos","na porta do motorista","na partida","nos faróis","na central multimídia"],
+  "Ar-condicionado":["nas saídas de ar","no compressor","no painel","no ar-condicionado"]}),
+ quando:por({"Suspensão":["ao passar em lombada","ao passar em buraco","em rua de paralelepípedo","em curva","em baixa velocidade","em alta velocidade","ao frear"],
+  "Ruídos":["em rua ruim","em lombada","em baixa velocidade","a partir de 60 km/h","ao acelerar","com o carro frio","o tempo todo"],
+  "Freio":["ao frear devagar","ao frear forte","em velocidade alta","de manhã, com o carro frio","em descida","em toda frenagem"],
+  "Motor":["ao acelerar","em subida","ao parar no semáforo","com o motor quente","com o motor frio","ao dar partida"],
+  "Transmissão":["na troca de marcha","ao sair parado","em subida","com o carro quente","em baixa velocidade","ao dar ré"],
+  "Direção":["em manobra","com o volante todo virado","em baixa velocidade","em reta","em curva","em alta velocidade"],
+  "Geral":["depois de rodar","com o carro parado","com o motor quente","depois de estacionar","o tempo todo"],
+  "Elétrico":["ao dar partida","de vez em quando","com o carro ligado","de manhã","ao acionar o botão"],
+  "Ar-condicionado":["nas horas quentes","com o motor frio","em marcha lenta","com o ar no máximo","o tempo todo"]}),
+ percebeu:por({"Suspensão":["ouvi batida seca","ouvi rangido","senti o carro balançar","senti folga ao passar no buraco"],
+  "Ruídos":["ouvi batida seca e repetida","ouvi rangido","ouvi ronco que aumenta com a velocidade","ouvi estalo","o barulho só aparece em piso ruim"],
+  "Freio":["ouvi chiado ao frear","o FDRS apontou código de falha","senti vibração no pedal","senti vibração no volante","o pedal está baixo","o carro puxou para um lado","a luz do ABS acendeu"],
+  "Motor":["o motor perdeu força","a luz de injeção acendeu","o FDRS apontou código de falha","o motor falhou","o carro apagou","senti o motor engasgar","saiu fumaça pelo escapamento"],
+  "Transmissão":["senti tranco na troca","o FDRS apontou código de falha","senti trepidação na saída","o câmbio demorou a engatar","a rotação subiu sem o carro acompanhar","ouvi barulho no câmbio"],
+  "Direção":["a direção ficou pesada","o carro puxou para um lado","ouvi estalo ao virar o volante","senti vibração no volante","o volante ficou torto com o carro reto"],
+  "Geral":["o sintoma apareceu igual ao relato","vi vazamento depois de aquecer","senti cheiro forte","a luz acendeu no painel","ouvi barulho estranho"],
+  "Elétrico":["a luz acendeu no painel","o FDRS apontou código de falha","o item falhou em algumas tentativas","o item não respondeu","a tensão da bateria estava baixa","o painel apagou e voltou"],
+  "Ar-condicionado":["a saída de ar estava quente","a temperatura ficou acima do esperado","o compressor armou e desarmou","o ar saiu fraco","senti cheiro ao ligar o ar"]}),
+ feito:por({"Suspensão":["troca das buchas da bandeja","troca do amortecedor","troca do terminal da barra estabilizadora","troca da bieleta","troca da mola","lubrificação e desbaste dos insertos do feixe de molas","reaperto da suspensão"],
+  "Ruídos":["reaperto das peças soltas","troca das buchas","fixação do forro","regulagem dos batentes","aplicação de feltro onde havia contato"],
+  "Freio":["troca das pastilhas","troca dos discos","limpeza e lubrificação das pinças","sangria do sistema","troca do sensor de rotação","troca do módulo do ABS","troca do fluido de freio"],
+  "Motor":["troca do sensor","troca da bobina","troca da bomba de combustível","limpeza do corpo de borboleta","reparo do chicote","troca do cárter e do filtro de óleo","atualização de software"],
+  "Transmissão":["troca do fluido do câmbio","atualização de software do câmbio","troca da embreagem","troca do coxim","troca do sensor"],
+  "Direção":["alinhamento e balanceamento","troca do terminal","troca da barra axial","troca do rolamento","troca do fluido da direção","troca da bomba"],
+  "Geral":["troca da junta","troca da mangueira","reaperto das conexões","limpeza e verificação"],
+  "Elétrico":["troca do botão","reparo do chicote e do conector","troca da bateria","troca do alternador","atualização de software","troca do módulo"],
+  "Ar-condicionado":["recarga de gás","troca do compressor","troca do relé","troca do filtro de cabine","reparo do vazamento no condensador"]}),
+ obs2:por({"Suspensão":["o barulho não apareceu mais","o carro ficou firme nas curvas","o sintoma não voltou"],
+  "Ruídos":["o barulho não apareceu mais","o sintoma não voltou"],
+  "Freio":["a frenagem ficou firme","o pedal ficou firme","não houve mais vibração","a luz do ABS apagou e não voltou"],
+  "Motor":["a luz apagou e não voltou","o motor respondeu normalmente","o carro não apagou mais"],
+  "Transmissão":["as trocas ficaram suaves","não houve mais tranco","a saída ficou sem trepidação"],
+  "Direção":["a direção ficou leve","o carro segue reto","não houve mais barulho ao virar"],
+  "Geral":["não houve mais vazamento","o sintoma não voltou"],
+  "Elétrico":["o item funcionou em todas as tentativas","a luz apagou e não voltou","o painel não apagou mais"],
+  "Ar-condicionado":["a temperatura ficou dentro do esperado","o compressor ficou armado o tempo todo","o ar saiu gelado"]}),
+ confirmou3:function(t){return["Cliente confirmou que o barulho acabou","Cliente confirmou que o problema relatado acabou","Cliente confirmou que o carro ficou firme","Cliente confirmou que a luz não acendeu mais","Cliente confirmou que o item voltou a funcionar"]},
+ motivo:por({"Freio":["risco de falha de freio","pedal de freio indo ao fundo"],"Motor":["risco de o motor apagar na via","risco de superaquecimento"],"Transmissão":["risco de o câmbio travar na via","risco de perda de tração"]})
+};
+var LOC={"Suspensão":0,"Ruídos":0,"Freio":1,"Motor":2,"Transmissão":2,"Direção":3,"Geral":4};
+var LOCS=[[["rua com lombadas","Acidentado","na"],["rua com buracos","Acidentado","na"],["rua de paralelepípedo","Acidentado","na"],["rua de terra","Acidentado","na"],["rua perto da loja","Curto","na"]],
+ [["avenida com frenagens","Curto","na"],["descida perto da loja","Curto","na"],["rua perto da loja","Curto","na"],["rodovia","Longo","na"]],
+ [["subida perto da loja","Curto","na"],["trânsito da cidade","Longo","no"],["avenida","Longo","na"],["rodovia","Longo","na"],["rua perto da loja","Curto","na"]],
+ [["pátio da loja com manobras","Curto","no"],["rua perto da loja","Curto","na"],["avenida reta","Curto","na"],["rodovia","Longo","na"]],
+ [["rua perto da loja","Curto","na"],["avenida","Longo","na"],["rodovia","Longo","na"],["trânsito da cidade","Longo","no"]]];
+var EST2={"Elétrico":["repetindo o acionamento 30 vezes","com o carro ligado por 15 minutos","desligando e ligando o carro de novo"],"Ar-condicionado":["com o ar no máximo por 10 minutos","em marcha lenta por 15 minutos","medindo a temperatura nas saídas"]};
+var CH={};
+function itens(f){
+ var t=S.tipo,est=estatico(t),r=[];
+ if(S.guincho&&f==="percebeu")return["o motor de partida gira e o motor não pega","o motor não entra em funcionamento","o scanner indicou falha","encontrei vazamento de fluido","a luz acendeu no painel"].map(function(x){return{t:x}});
+ if(S.guincho&&f==="relato")return["o carro parou e não liga mais","a luz de injeção acendeu e o carro apagou","o carro parou na rodovia","o carro não pega"].map(function(x){return{t:x}});
+ if(f==="local"){if(est)return[];return(LOCS[LOC[t]]||[]).map(function(x){return{t:x[0],p:x[1]}})}
+ if(f==="local3"||f==="teste2"){
+  if(est){return(EST2[t]||[]).map(function(x){return{t:x,p:"Estático"}})}
+  r=[{t:"no mesmo trajeto do primeiro teste",p:"="}];
+  (LOCS[LOC[t]]||[]).forEach(function(x){r.push({t:x[2]+" "+x[0],p:x[1]})});return r}
+ var o=OPC[f];if(!o)return[];
+ var l=o(t).slice();
+ if(f==="feito")l=l.concat(["diagnóstico com FDRS conforme literatura Ford","código de falha apagado"]);
+ if(f==="obs2")l=l.concat(["a falha não voltou"]);
+ return l.map(function(x){return{t:x}})}
+
+function $(i){return document.getElementById(i)}
+function e(s){return String(s==null?"":s).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+function cap(s){s=(s||"").trim();return s?s[0].toUpperCase()+s.slice(1):s}
+function fim(s){s=(s||"").trim();if(!s)return s;return /[.!?"]$/.test(s)?s:s+"."}
+function low(s){s=(s||"").trim();return s&&!/^[A-Z]{2}/.test(s)?s[0].toLowerCase()+s.slice(1):s}
+function fx(v,l){v=(v||"").trim();return v?v:"⟦"+l+"⟧"}
+function tipoE(t){var x=TIPOS.filter(function(z){return z[0]===t})[0];return !!(x&&x[1]==="E")}
+function estatico(){return S.modo==="estatico"}
+function norm(s){return(s||"").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"")}
+function tem(a,b){b=norm(b).replace(/^(n[oa]s?|em|ao|aos|a|o)\s+/,"");return !!b&&norm(a).indexOf(b)>=0}
+var SEMREP=["nao","aguard","peca"];
+function sem(st){return SEMREP.indexOf(st.orc)>=0}
+function acao(f){f=(f||"").trim();return /^(troca|reaperto|lubrifica|limpeza|recarga|regulagem|fixa|aplica|alinhamento|atualiza|reparo|sangria|diagn|c[oó]digo)/i.test(f)?"Realizado o serviço de "+low(f):cap(f)}
+function precisa(f){f=(f||"").trim();return /^(troca|reaperto|lubrifica|limpeza|recarga|regulagem|fixa|aplica|alinhamento|atualiza|reparo|sangria)/i.test(f)?"Diagnóstico aponta necessidade de "+low(f):cap(f)}
+function semPonto(t){return(t||"").trim().replace(/[.\s]+$/,"")}
+function segOn(st){return !!st.seg}
+
+function gerar(st){
+ var o={r1:{},r2:null,r3:null,al:{}};
+ var est=estatico(),sg=segOn(st),gu=st.guincho,R=fx(st.relato,"o que o cliente relata");
+ var base='Cliente relata "'+R+'"';
+ if(!gu){
+  var on=(st.onde||"").trim(),qd=lista(st.quando).filter(function(q){return !tem(st.relato,q)});
+  if(!on)base+=" "+fx("","onde no carro");else if(!tem(st.relato,on))base+=" "+low(on);
+  if(!(st.quando||"").trim())base+=", "+fx("","quando aparece");else if(qd.length)base+=", "+low(qd.join(", "));
+ }
+ base+=".";
+ var pc=fx(low(st.percebeu),"o que você percebeu");
+ var d1;
+ if(gu)d1=base+" Veículo chegou de guincho e não liga, teste de rodagem não realizado."+(st.percebeu?" Com o carro parado, "+fim(low(st.percebeu)):"");
+ else if(sg)d1=base+" Teste em circulação dispensado por segurança, "+fx(low(st.motivo),"motivo da dispensa")+". Com o carro parado, "+fim(pc);
+ else if(est)d1=base+" Em teste estático com o carro parado, "+fim(pc);
+ else d1=base+" No teste em "+fx(low(st.local),"onde você testou")+", "+fim(pc);
+ var rep=gu?"Não":st.reproduz;
+ o.r1={perc:(gu||est||sg)?null:st.percurso,desc:d1,ck:[["Reproduzido?",rep],["Ofereceu o teste de rodagem ao cliente?","Sim"],["O Cliente aceitou a realizar o teste de rodagem?",st.aceitou1]]};
+ if(gu)o.al.r1=["Carro sem condição de rodar","Explique o motivo na descrição, marque Não em Reproduzido e não marque nenhum percurso. O teste precisa ser oferecido ao cliente mesmo assim."];
+ else if(sg)o.al.r1=["Rua dispensada","Deixe o percurso sem marcar. O motivo da dispensa precisa estar escrito, como acima."];
+ else if(est)o.al.r1=["Teste estático","A descrição é obrigatória. Só o percurso fica sem marcar. O teste precisa ser oferecido ao cliente."];
+ if(/or[çc]amento|aguardando|autoriza/i.test(st.percebeu||""))o.al.r1=["Status do orçamento não vai aqui","A Rodagem 1 descreve só o sintoma. Orçamento e peça ficam em Como ficou o reparo, na Rodagem 2."];
+ if(!gu&&rep==="Não"){o.al.r1=["Sintoma não apareceu no teste","O carro não deve ser recebido para esse diagnóstico. Rodagem 2 e 3 ficam sem preencher.","red"];o.bloq=true;return o}
+ var NAO=[["Aprovado?","Não"],["Ofereceu o teste de rodagem ao cliente?","Não"]];
+ if(sem(st)){
+  var ach=st.feito?fim(precisa(st.feito))+" ":(st.orc==="nao"?"":fim(fx("","o que o diagnóstico encontrou"))+" ");
+  var fimR2={nao:"Orçamento apresentado ao cliente e não aprovado, serviço não executado.",aguard:"Orçamento apresentado ao cliente, aguardando aprovação para o reparo.",peca:"Serviço não realizado por falta de "+fx(low(semPonto(st.peca)),"peça em falta")+" no estoque, pedido da peça realizado."}[st.orc];
+  o.r2={perc:null,desc:ach+fimR2,ck:NAO};
+  if(st.orc!=="nao")o.al.r2=["Reparo ainda não feito","Aprovado fica Não. Quando o reparo for concluído, refaça esta rodagem com o que foi feito e o resultado do teste."];
+  if(st.retirou)o.r3={perc:null,desc:"Cliente retirou o veículo sem o reparo"+{nao:", orçamento não aprovado.",aguard:", orçamento ainda sem aprovação.",peca:", aguardando a chegada da peça."}[st.orc],ck:NAO};
+  return o}
+ var p2=st.percurso2,e2=p2==="Estático";
+ var t2=(e2?"Teste estático ":"Teste de rodagem ")+fx(low(semPonto(st.teste2)),"como testou depois");
+ var parte=st.orc==="parcial"?" Não aprovado pelo cliente e não executado, "+fim(fx(low(st.naofeito),"o que o cliente não aprovou")):"";
+ var res=st.sumiu==="Sim"?t2+", "+(st.obs2?fim(low(st.obs2)):"o sintoma relatado pelo cliente não apareceu mais."):t2+", o sintoma continua"+(st.obs2?", "+fim(low(st.obs2)):".")+" Reparo não solucionou.";
+ o.r2={perc:e2?null:p2,desc:fim(st.feito?acao(st.feito):fx("","o que foi feito"))+parte+" "+res,ck:[["Aprovado?",st.sumiu],["Ofereceu o teste de rodagem ao cliente?","Não"]]};
+ if(/aguard|or[çc]amento|autoriz|pedido d|falta de pe/i.test((st.feito||"")+" "+(st.obs2||"")))o.al.r2=["Isso parece status do orçamento ou da peça","Escolha Aguardando aprovação ou Aguardando peça em Como ficou o reparo. Assim o Aprovado sai como Não."];
+ if(st.sumiu==="Não"){o.al.r2=["Reparo ainda não resolveu","Corrija antes de liberar o carro e deixe a Rodagem 2 com o resultado final.","red"];o.al.r3=["Aguarde a Rodagem 2","Só faça a Rodagem 3 depois que o sintoma sumir."];return o}
+ if(st.aceitou3==="Não"){
+  o.r3={perc:null,desc:"Teste oferecido ao cliente na entrega. Cliente optou por não participar.",ck:[["Aprovado?","Sim"],["Ofereceu o teste de rodagem ao cliente?","Sim"],["O Cliente aceitou a realizar o teste de rodagem?","Não"]]};
+ }else{
+  var p3=st.percurso3,e3=p3==="Estático",cf=cap(fx(st.confirmou3,"o que o cliente confirmou"));
+  cf=st.aprov3==="Sim"?semPonto(cf)+(/^cliente/i.test(cf)?" e aprovou a solução.":". Cliente aprovou a solução."):fim(cf)+" Cliente não aprovou a solução.";
+  o.r3={perc:e3?null:p3,desc:(e3?"Verificação feita com o cliente ":"Teste de rodagem feito com o cliente ")+fx(low(semPonto(st.local3)),"onde testaram juntos")+(st.orc==="parcial"?", mostrando os itens executados conforme a aprovação parcial.":".")+" "+cf,ck:[["Aprovado?",st.aprov3],["Ofereceu o teste de rodagem ao cliente?","Sim"],["O Cliente aceitou a realizar o teste de rodagem?","Sim"]]};
+  if(st.aprov3==="Não")o.al.r3=["Cliente não aprovou","O carro volta para a oficina antes da entrega.","red"];
+ }
+ return o}
+
+function marcar(t){return e(t).replace(/⟦([^⟧]+)⟧/g,"<mark>falta $1</mark>")}
+function cartao(n,r,copia){
+ var h='<div class="afc"><div class="tt"><b>Rodagem '+n+"</b>"+""+"</div>";
+ ["Curto","Longo","Acidentado"].forEach(function(p){h+='<div class="rr"><span>Percurso '+p.toLowerCase()+'</span><span class="rad'+(r.perc===p?" on":"")+'" role="img" aria-label="'+(r.perc===p?"marcado":"não marcado")+'"></span></div>'});
+ var ov=S.over[n];
+ h+='<div class="dl">Descrição</div>'+(ov!=null?'<textarea class="ov" data-ov="'+n+'" aria-label="Texto da Rodagem '+n+'">'+e(ov)+'</textarea><button type="button" class="lk" data-ovx="'+n+'">Voltar ao texto automático</button>':'<div class="dbox">'+marcar(r.desc)+'</div><button type="button" class="lk" data-ove="'+n+'">Editar o texto</button>');
+ r.ck.forEach(function(c){h+='<div class="rr chk"><span>'+e(c[0])+'</span><span class="ck" role="img" aria-label="'+e(c[1])+'"><span class="y'+(c[1]==="Sim"?" on":"")+'">✓</span><span class="n'+(c[1]==="Não"?" on":"")+'">✕</span></span></div>'});
+ return h+"</div>"}
+function vazio(n,t){return'<div class="afc"><div class="tt"><b>Rodagem '+n+'</b></div><p class="na">'+e(t)+"</p></div>"}
+function alerta(a){return a?'<div class="al '+(a[2]||"")+'"><b>'+e(a[0])+"</b>"+e(a[1])+"</div>":""}
+function qual(st){if(st.guincho)return"";var it=[["O quê",st.relato],["Onde",st.onde],["Quando",st.quando],["Como",st.percebeu]];return'<div class="qual" aria-label="Itens da descrição">'+it.map(function(x){var ok=(x[1]||"").trim();return'<span class="q'+(ok?" on":"")+'">'+(ok?"✓ ":"")+x[0]+"</span>"}).join("")+"</div>"}
+
+function ler(){var st={tipo:S.tipo,modo:S.modo,seg:S.modo==="seg",guincho:S.modo==="guincho",estatico:S.modo==="estatico",orc:S.orc,retirou:S.retirou};CAMPOS.forEach(function(k){st[k]=$(k).value});SEGS.forEach(function(k){var b=$(k).querySelector('[aria-pressed="true"]');st[k]=b?b.dataset.v:"Sim"});return st}
+function setSeg(id,v){[].forEach.call($(id).querySelectorAll("button"),function(b){b.setAttribute("aria-pressed",String(b.dataset.v===v))})}
+function tipos(){function c(t){return'<button type="button" class="chip" data-tipo="'+e(t[0])+'" aria-pressed="'+(S.tipo===t[0])+'">'+e(t[0])+"</button>"}
+ $("tiposR").innerHTML=TIPOS.map(c).join("")}
+function lista(v){return(v||"").split(/,\s*/).map(function(x){return x.trim()}).filter(Boolean)}
+var recId=null,rec=null,SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+var ICON='<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="3" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>';
+function sug(){[].forEach.call(document.querySelectorAll(".sug"),function(box){
+  var f=box.dataset.f,it=itens(f),multi=MULTI.indexOf(f)>=0,v=$(f).value,h="";CH[f]=it;
+  box.setAttribute("role","group");box.setAttribute("aria-label","Opções rápidas");
+  if(VOZ.indexOf(f)>=0)h+='<button type="button" class="mic" data-mic="'+f+'" aria-pressed="'+(recId===f)+'">'+ICON+"<span>"+(recId===f?"Ouvindo, toque para parar":"Falar")+"</span></button>";
+  var sel1=!multi&&it.some(function(x){return x.t===v.trim()});
+  h+=it.map(function(x,i){var on=multi?lista(v).indexOf(x.t)>=0:v.trim()===x.t;if(sel1&&!on)return"";return'<button type="button" class="chip" data-f="'+f+'" data-i="'+i+'" aria-pressed="'+on+'">'+e(x.t)+"</button>"}).join("")+(sel1?'<button type="button" class="troca" data-troca="'+f+'">Trocar</button>':"");
+  box.innerHTML=h})}
+function escolher(f,i){var x=CH[f][i],el=$(f),multi=MULTI.indexOf(f)>=0;
+  if(multi){var l=lista(el.value),k=l.indexOf(x.t);if(k>=0)l.splice(k,1);else l.push(x.t);el.value=l.join(", ")}
+  else el.value=el.value.trim()===x.t?"":x.t;
+  var alvo={local:"percurso",teste2:"percurso2",local3:"percurso3"}[f];
+  if(alvo&&x.p&&el.value){$(alvo).value=x.p==="="?$("percurso").value:x.p}
+  render()}
+function aviso(t){var a=$("aviso");a.textContent=t;a.hidden=false;clearTimeout(aviso.t);aviso.t=setTimeout(function(){a.hidden=true},4500)}
+function parar(){var r=rec,was=recId!==null;rec=null;recId=null;clearTimeout(parar.t);if(r){r.onresult=r.onerror=r.onend=r.onspeechend=null;try{r.abort()}catch(x){try{r.stop()}catch(y){}}}if(was)sug()}
+function falar(f){
+  if(recId===f){parar();return}
+  parar();
+  if(!SR){aviso("Este navegador não tem ditado. Use o microfone do teclado do celular.");$(f).focus();return}
+  var el=$(f),base=el.value.trim(),r=new SR();rec=r;recId=f;parar.t=setTimeout(parar,20000);
+  r.lang="pt-BR";r.interimResults=true;r.continuous=false;
+  r.onresult=function(ev){var t="";for(var i=0;i<ev.results.length;i++)t+=ev.results[i][0].transcript;t=t.trim();
+    el.value=base?base.replace(/[\s,]+$/,"")+(/[.!?]$/.test(base)?" ":", ")+t:t;render()};
+  r.onerror=function(ev){if(ev.error==="not-allowed"||ev.error==="service-not-allowed")aviso("Libere o microfone no navegador para falar. Enquanto isso, use o microfone do teclado.");else if(ev.error==="no-speech")aviso("Não ouvi nada. Toque em Falar e tente de novo.")};
+  r.onspeechend=function(){try{r.stop()}catch(x){}};
+  r.onend=function(){if(rec===r)parar()};
+  try{r.start();sug()}catch(x){parar();aviso("Não consegui abrir o microfone. Use o do teclado.")}}
+document.addEventListener("visibilitychange",function(){if(document.hidden)parar()});
+window.addEventListener("pagehide",parar);
+document.addEventListener("focusin",function(ev){if(recId&&/INPUT|TEXTAREA|SELECT/.test(ev.target.tagName))parar()});
+
+function faltas(st){
+  function v(k){return(st[k]||"").trim()}
+  var gu=st.guincho,est=st.estatico,sg=segOn(st),a=[],b=[],c=[];
+  ["relato"].concat(gu?[]:["onde","quando"]).forEach(function(k){if(!v(k))a.push(k)});
+  if(!est&&!sg&&!gu&&!v("local"))a.push("local");
+  if(sg&&!v("motivo"))a.push("motivo");
+  if(!gu&&!v("percebeu"))a.push("percebeu");
+  if(sem(st)){if(st.orc!=="nao"&&!v("feito"))b.push("feito");if(st.orc==="peca"&&!v("peca"))b.push("peca")}
+  else{if(!v("feito"))b.push("feito");if(!v("teste2"))b.push("teste2");if(st.orc==="parcial"&&!v("naofeito"))b.push("naofeito");
+    if(st.aceitou3==="Sim"){if(!v("local3"))c.push("local3");if(!v("confirmou3"))c.push("confirmou3")}}
+  return[a,b,c]}
+function estado(st,o){
+  var f=faltas(st),bloq=!!o.bloq;
+  [].forEach.call(document.querySelectorAll(".fl[data-fld]"),function(d){d.classList.toggle("ok",!!$(d.dataset.fld).value.trim())});
+  for(var i=1;i<=3;i++){
+    var n=f[i-1].length,na=bloq&&i>1||(sem(st)&&i===3&&!st.retirou),pill=$("st"+i),bts=document.querySelectorAll('[data-cpn="'+i+'"]');
+    pill.className="stt "+(na?"na":n?"":"ok");pill.textContent=na?"Não se aplica":n?"Faltam "+n:"Pronto";
+    var m=S.over[i]!=null?0:n;
+    [].forEach.call(bts,function(bt){if(bt.dataset.feito)return;bt.disabled=na||m>0;bt.textContent=na?"Não se aplica":m?"Faltam "+m+(m===1?" item":" itens")+" para copiar":"Copiar texto da Rodagem "+i})}}
+(function(){var o=document.querySelector('[data-fld="obs2"]');if(o)o.dataset.opt="1"})();
+function dicas(){["peca","relato","onde","quando","local","percebeu","feito","teste2","obs2","local3","confirmou3","motivo"].forEach(function(k){var it=itens(k)[0];$(k).placeholder="Escolha acima ou escreva aqui"})}
+
+function render(){
+ var st=ler(),o=gerar(st),est=st.estatico,sg=segOn(st),gu=st.guincho,sr=sem(st);
+ tipos();sug();estado(st,o);
+ setSeg("modo",S.modo);$("mSeg").hidden=RISCO.indexOf(st.tipo)<0;
+ ["onde","quando"].forEach(function(k){document.querySelector('[data-fld="'+k+'"]').hidden=!!gu});
+ $("motWrap").hidden=!sg;
+ $("percWrap").hidden=est||sg||gu;$("repWrap").hidden=gu;
+ $("percebeuT").textContent=gu||sg?"O que você verificou com o carro parado":est?"O que você verificou no teste estático":"O que você percebeu no teste";
+ setSeg("orc",st.orc);
+ $("feitoT").textContent=sr?"O que o diagnóstico encontrou":"O que foi feito";
+ $("feitoS").textContent=st.orc==="nao"?"Opcional, ajuda a entender o orçamento":sr?"O reparo necessário, com o lado ou a posição":"Peça trocada ou ajuste, diga também o lado ou a posição";
+ var ff=document.querySelector('[data-fld="feito"]');if(st.orc==="nao")ff.dataset.opt="1";else delete ff.dataset.opt;
+ $("pecaWrap").hidden=st.orc!=="peca";
+ $("r2campos").hidden=sr;$("naoWrap").hidden=st.orc!=="parcial";
+ $("r3form").hidden=sr;$("r3sem").hidden=!sr;$("r3sim").hidden=st.aceitou3==="Não";
+ var T='<span class="st">Como fica no AgendaFord</span>';
+ $("out1").innerHTML=T+qual(st)+cartao(1,o.r1,true)+alerta(o.al.r1);
+ if(o.bloq){$("out2").innerHTML=T+vazio(2,"Sem sintoma confirmado não há reparo para registrar.");$("out3").innerHTML=T+vazio(3,"Não se aplica.");salvar(st);return}
+ $("out2").innerHTML=T+cartao(2,o.r2,true)+alerta(o.al.r2);
+ $("out3").innerHTML=T+(o.r3?cartao(3,o.r3,true):vazio(3,sr?"Só preencha se o cliente retirar o carro sem o reparo.":"Não precisa preencher."))+alerta(o.al.r3);
+ salvar(st)}
+function salvar(st){try{localStorage.setItem("rod_caso4",JSON.stringify(st))}catch(x){}}
+function padraoP2(x){return x.percurso2||(S.modo==="estatico"?"Estático":(x.percurso||"Curto"))}
+function carregar(x){S.tipo=x.tipo||S.tipo;S.modo=x.modo||(tipoE(S.tipo)?"estatico":"rua");S.orc=x.orc||"total";S.retirou=!!x.retirou;S.over={};$("retirou").checked=S.retirou;
+ CAMPOS.forEach(function(k){var v=x[k]||"";if(k==="percurso")v=x.percurso||"Curto";if(k==="percurso2")v=padraoP2(x);if(k==="percurso3")v=x.percurso3||padraoP2(x);$(k).value=v});
+ setSeg("reproduz",x.reproduz||"Sim");setSeg("aceitou1",x.aceitou1||"Sim");setSeg("sumiu",x.sumiu||"Sim");setSeg("aceitou3",x.aceitou3||"Sim");setSeg("aprov3",x.aprov3||"Sim");
+ dicas();render()}
+
+document.addEventListener("click",function(ev){var b=ev.target.closest("button");if(!b)return;
+  if(b.dataset.go){var a=$(b.dataset.go);if(a)a.scrollIntoView({behavior:"smooth",block:"start"});return}
+  if(b.id==="limpar"){parar();carregar({tipo:S.tipo});return}
+  if(b.dataset.tipo){var ant=S.tipo;S.tipo=b.dataset.tipo;
+    if(tipoE(S.tipo))S.modo="estatico";else if(tipoE(ant)&&S.modo==="estatico")S.modo="rua";
+    if(S.modo==="seg"&&RISCO.indexOf(S.tipo)<0)S.modo="rua";
+    dicas();render();return}
+  if(b.dataset.ove){var n=b.dataset.ove,bx=$("out"+n).querySelector(".dbox");S.over[n]=bx?bx.textContent.replace(/falta ([^.,"]+)/g,"[$1]"):"";render();var t=$("out"+n).querySelector(".ov");if(t){t.focus();t.setSelectionRange(t.value.length,t.value.length)}return}
+  if(b.dataset.ovx){delete S.over[b.dataset.ovx];render();return}
+  if(b.dataset.troca){$(b.dataset.troca).value="";render();return}
+  if(b.dataset.mic){falar(b.dataset.mic);return}
+  if(b.dataset.f&&b.dataset.i!==undefined){escolher(b.dataset.f,+b.dataset.i);return}
+  if(b.dataset.cpn){if(b.disabled)return;var bx=$("out"+b.dataset.cpn).querySelector(".ov")||$("out"+b.dataset.cpn).querySelector(".dbox"),tx=bx.tagName==="TEXTAREA"?bx.value:bx.textContent;
+   var fim2=function(){b.dataset.feito="1";b.textContent="Copiado. Cole no AgendaFord";setTimeout(function(){delete b.dataset.feito;render()},2200)};
+   var sel2=function(){if(bx.tagName==="TEXTAREA"){bx.select();return}var rg=document.createRange();rg.selectNodeContents(bx);var sl=window.getSelection();sl.removeAllRanges();sl.addRange(rg);bx.scrollIntoView({block:"center"})};
+   try{navigator.clipboard.writeText(tx).then(fim2,sel2)}catch(x){sel2()}return}
+  if(b.dataset.cp){var box=b.closest(".afc").querySelector(".dbox");var txt=box.textContent;
+   var ok=function(){b.textContent="Copiado";b.classList.add("done");setTimeout(function(){b.textContent="Copiar texto";b.classList.remove("done")},1600)};
+   var sel=function(){var r=document.createRange();r.selectNodeContents(box);var s=window.getSelection();s.removeAllRanges();s.addRange(r)};
+   try{navigator.clipboard.writeText(txt).then(ok,sel)}catch(x){sel()}return}
+  var g=b.parentElement;if(g&&g.classList.contains("seg")&&b.dataset.v){if(g.id==="orc"){S.orc=b.dataset.v;S.over={}}else if(g.id==="modo"){S.modo=b.dataset.v;S.over={}}else setSeg(g.id,b.dataset.v);render()}
+});
+CAMPOS.forEach(function(k){$(k).addEventListener(k.indexOf("percurso")===0?"change":"input",render)});
+$("retirou").addEventListener("change",function(){S.retirou=this.checked;render()});
+document.addEventListener("input",function(ev){if(ev.target.classList&&ev.target.classList.contains("ov"))S.over[ev.target.dataset.ov]=ev.target.value});
+var salvo=null;try{salvo=JSON.parse(localStorage.getItem("rod_caso4")||"null")}catch(x){}
+carregar(salvo&&salvo.tipo?salvo:{tipo:"Suspensão"});
+</script></html>
