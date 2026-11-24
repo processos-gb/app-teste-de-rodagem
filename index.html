@@ -158,6 +158,7 @@ textarea{min-height:72px}
     <div class="fl" data-fld="percebeu"><div class="lh"><label class="lt" for="percebeu"><span id="percebeuT">O que você percebeu no teste</span></label><i class="ind" aria-hidden="true"></i></div><p class="sm">Fale o que ouviu, sentiu ou mediu. Se puder, diga o valor, como km/h ou temperatura</p><div class="sug" data-f="percebeu"></div><textarea id="percebeu"></textarea></div>
     <div class="g2">
      <div class="op" id="repWrap"><span>O sintoma apareceu?</span><div class="seg" id="reproduz"><button type="button" data-v="Sim" aria-pressed="true">Sim</button><button type="button" data-v="Não" aria-pressed="false">Não</button></div></div>
+     <div class="op" id="presWrap"><span>O cliente estava junto?</span><div class="seg" id="presente"><button type="button" data-v="Sim" aria-pressed="true">Sim</button><button type="button" data-v="Não" aria-pressed="false">Não</button></div></div>
      <div class="op" id="ac1Wrap"><span>Cliente participou do teste?</span><div class="seg" id="aceitou1"><button type="button" data-v="Sim" aria-pressed="true">Sim</button><button type="button" data-v="Não" aria-pressed="false">Não</button></div></div>
     </div>
     <button type="button" class="btn big" data-cpn="1"></button>
@@ -215,7 +216,7 @@ textarea{min-height:72px}
 var TIPOS=[["Suspensão","R"],["Ruídos","R"],["Freio","R"],["Motor","R"],["Transmissão","R"],["Direção","R"],["Geral","R"],["Elétrico","E"],["Ar-condicionado","E"]];
 var RISCO=["Freio","Motor","Transmissão"];
 var CAMPOS=["motivo","peca","relato","onde","quando","local","percurso","percebeu","feito","naofeito","teste2","percurso2","obs2","local3","percurso3","confirmou3"];
-var SEGS=["reproduz","aceitou1","sumiu","aceitou3","aprov3"];
+var SEGS=["reproduz","presente","aceitou1","sumiu","aceitou3","aprov3"];
 var S={tipo:"Suspensão",modo:"rua",orc:"total",retirou:false,over:{}};
 var MULTI=["quando","percebeu","feito","obs2"];
 var VOZ=["peca","relato","onde","quando","local","percebeu","motivo","feito","naofeito","teste2","obs2","local3","confirmou3"];
@@ -336,8 +337,9 @@ function gerar(st){
  else if(est)d1=base+" Em teste estático com o carro parado, "+fim(pc);
  else d1=base+" No teste em "+fx(low(st.local),"onde você testou")+", "+fim(pc);
  var rep=gu?"Não":st.reproduz;
- o.r1={perc:(gu||est||sg)?null:st.percurso,desc:d1,ck:[["Reproduzido?",rep],["Ofereceu o teste de rodagem ao cliente?","Sim"],["O Cliente aceitou a realizar o teste de rodagem?",st.aceitou1]]};
- if(gu)o.al.r1=["Carro sem condição de rodar","Explique o motivo na descrição, marque Não em Reproduzido e não marque nenhum percurso. O teste precisa ser oferecido ao cliente mesmo assim."];
+ var aus=gu&&st.presente==="Não";if(aus)d1+=" Cliente não estava presente.";
+ o.r1={perc:(gu||est||sg)?null:st.percurso,desc:d1,ck:aus?[["Reproduzido?",rep],["Ofereceu o teste de rodagem ao cliente?","Não"]]:[["Reproduzido?",rep],["Ofereceu o teste de rodagem ao cliente?","Sim"],["O Cliente aceitou a realizar o teste de rodagem?",st.aceitou1]]};
+ if(gu)o.al.r1=aus?["Carro sem condição de rodar, cliente ausente","Marque Não em Reproduzido, não marque percurso, marque Não em Ofereceu e deixe Cliente aceitou sem marcar. A frase Cliente não estava presente precisa ficar na descrição, como a Ford respondeu em 10/11/26."]:["Carro sem condição de rodar","Explique o motivo na descrição, marque Não em Reproduzido e não marque nenhum percurso. Com o cliente junto, o teste é oferecido a ele."];
  else if(sg)o.al.r1=["Rua dispensada","Deixe o percurso sem marcar. O motivo da dispensa precisa estar escrito, como acima."];
  else if(est)o.al.r1=["Teste estático","A descrição é obrigatória. Só o percurso fica sem marcar. O teste precisa ser oferecido ao cliente."];
  if(/or[çc]amento|aguardando|autoriza/i.test(st.percebeu||""))o.al.r1=["Status do orçamento não vai aqui","A Rodagem 1 descreve só o sintoma. Orçamento e peça ficam em Como ficou o reparo, na Rodagem 2."];
@@ -445,7 +447,7 @@ function render(){
  setSeg("modo",S.modo);$("mSeg").hidden=RISCO.indexOf(st.tipo)<0;
  ["onde","quando"].forEach(function(k){document.querySelector('[data-fld="'+k+'"]').hidden=!!gu});
  $("motWrap").hidden=!sg;
- $("percWrap").hidden=est||sg||gu;$("repWrap").hidden=gu;
+ $("percWrap").hidden=est||sg||gu;$("repWrap").hidden=gu;$("presWrap").hidden=!gu;$("ac1Wrap").hidden=gu&&st.presente==="Não";
  $("percebeuT").textContent=gu||sg?"O que você verificou com o carro parado":est?"O que você verificou no teste estático":"O que você percebeu no teste";
  setSeg("orc",st.orc);
  $("feitoT").textContent=sr?"O que o diagnóstico encontrou":"O que foi feito";
@@ -458,13 +460,13 @@ function render(){
  $("out1").innerHTML=T+qual(st)+cartao(1,o.r1,true)+alerta(o.al.r1);
  if(o.bloq){$("out2").innerHTML=T+vazio(2,"Sem sintoma confirmado não há reparo para registrar.");$("out3").innerHTML=T+vazio(3,"Não se aplica.");salvar(st);return}
  $("out2").innerHTML=T+cartao(2,o.r2,true)+alerta(o.al.r2);
- $("out3").innerHTML=T+(o.r3?cartao(3,o.r3,true):vazio(3,sr?"Só preencha se o cliente retirar o carro sem o reparo.":"Não precisa preencher."))+alerta(o.al.r3);
+ $("out3").innerHTML=T+(o.r3?cartao(3,o.r3,true):vazio(3,sr?"Não é necessária, porque o serviço não foi executado. Se o cliente retirar o carro, marque a opção para registrar.":"Não precisa preencher."))+alerta(o.al.r3);
  salvar(st)}
 function salvar(st){try{localStorage.setItem("rod_caso4",JSON.stringify(st))}catch(x){}}
 function padraoP2(x){return x.percurso2||(S.modo==="estatico"?"Estático":(x.percurso||"Curto"))}
 function carregar(x){S.tipo=x.tipo||S.tipo;S.modo=x.modo||(tipoE(S.tipo)?"estatico":"rua");S.orc=x.orc||"total";S.retirou=!!x.retirou;S.over={};$("retirou").checked=S.retirou;
  CAMPOS.forEach(function(k){var v=x[k]||"";if(k==="percurso")v=x.percurso||"Curto";if(k==="percurso2")v=padraoP2(x);if(k==="percurso3")v=x.percurso3||padraoP2(x);$(k).value=v});
- setSeg("reproduz",x.reproduz||"Sim");setSeg("aceitou1",x.aceitou1||"Sim");setSeg("sumiu",x.sumiu||"Sim");setSeg("aceitou3",x.aceitou3||"Sim");setSeg("aprov3",x.aprov3||"Sim");
+ setSeg("reproduz",x.reproduz||"Sim");setSeg("presente",x.presente||"Sim");setSeg("aceitou1",x.aceitou1||"Sim");setSeg("sumiu",x.sumiu||"Sim");setSeg("aceitou3",x.aceitou3||"Sim");setSeg("aprov3",x.aprov3||"Sim");
  dicas();render()}
 
 document.addEventListener("click",function(ev){var b=ev.target.closest("button");if(!b)return;
